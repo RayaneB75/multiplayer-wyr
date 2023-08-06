@@ -1,0 +1,10 @@
+# Python venv files
+**/pyvenv.cfg
+**/share
+**/bin
+**/include
+**/lib
+**/lib64
+
+# VSCode
+.vscode/
