@@ -22,7 +22,7 @@ Chaque joueur doit trouver des partenaires durant la soirée pour répondre à d
 
 ### Lancement du front-end
 
-- `cd front`
+- `cd web`
 - `flutter run -d chrome`
 
 ## Fonctionnalités
