@@ -1,8 +1,0 @@
-DROP TABLE IF EXISTS users;
-
-CREATE TABLE users (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    username TEXT NOT NULL,
-    email TEXT NOT NULL,
-    score INT 
-);
