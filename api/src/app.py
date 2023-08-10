@@ -110,7 +110,7 @@ app.add_url_rule("/login", "login", login, methods=["POST"])
 app.add_url_rule("/match", "match", match, methods=["POST"])
 app.add_url_rule("/pull", "pull", pull, methods=["GET"])
 app.add_url_rule("/push", "push", push, methods=["POST"])
-app.add_url_rule("/healthcheck", "healthcheck", healthcheck, methods=["POST"])
+app.add_url_rule("/healthcheck", "healthcheck", healthcheck, methods=["GET"])
 
 
 def main(*args, debug=False, run=False):
