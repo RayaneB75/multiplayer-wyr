@@ -67,8 +67,21 @@ def register():
 
     This function uses the MySQL connector and Flask request (POST) to get data.
     """
-    email = request.form.get("email")
-    password = request.form.get("password")
+    if not request.is_json:
+        logging.error("/register: no data passed to login fonction")
+        return return_json()
+    
+    try:
+        _json = request.json
+    except Exception as err:
+        logging.error("/register: json parsing error data -> " + str(request.args))
+        raise err
+    if not isinstance(_json, dict):
+        logging.error("/register: json is not dictionnary format")
+        return return_json()
+
+    email = _json.get("email", None)
+    password = _json.get("password", None)
 
     # Check if the email exists via SMTP call to z.imt.fr
     if not check_email_exists(email):
@@ -79,15 +92,15 @@ def register():
     # Generate a random 6-digit ID
     user_id = random.randint(100000, 999999)
     score = 0
-    cnx = connect_db()
     try:
+        cnx = connect_db()
         cursor = cnx.cursor()
         # Insert user data into the database
         cursor.execute(
-            "INSERT INTO users (email, password, score, user_id) VALUES (%s, %d, %s, %s)",
-            (email, password, score, user_id),
+            "INSERT INTO Users (email, password, score, user_id) VALUES (%s, %s, %s, %s)",
+            (email, create_hashed_password(password), score, user_id),
         )
-        cursor.commit()
+        cnx.commit()
     except mysql.Error as err:
         logging.error("Error while inserting user data into the database : %s", err)
         cursor.close()
@@ -122,8 +135,8 @@ def login():
 
     email = _json.get("email", None)
     password = _json.get("password", None)
-    hashed_password = get_db_password(email)
-    valid_password = check_password(password, hashed_password)
+    hashed_db_password = get_db_password(email)
+    valid_password = check_password(password, hashed_db_password)
 
     logging.debug("email %s", str(email))
 
@@ -133,7 +146,7 @@ def login():
         return return_json({"token": token, "refresh_token": refresh_token})
 
     logging.error("/login: Passwords mismatch")
-    return return_json()
+    return return_json("Wrong password.")
 
 
 def get_db_password(email):
@@ -142,21 +155,27 @@ def get_db_password(email):
         * Return        : Password of the service
         * Param         : name_service
     """
-    cnx = connect_db()
-    if cnx is None:
-        logging.error("Cannot connect to DB")
-        return None
+    try:
+        cnx = connect_db()
+        if cnx is None:
+            logging.error("Cannot connect to DB")
+            return None
 
-    result = None
-    if email:
-        cursor = cnx.cursor()
-        query = "SELECT password FROM Users WHERE email = %s"
-        val = (email,)
-        cursor.execute(query, val)
-        result = cursor.fetchone()[0]
+        result = None
+        if email:
+            cursor = cnx.cursor()
+            query = "SELECT password FROM Users WHERE email = %s"
+            val = (email,)
+            cursor.execute(query, val)
+            result = cursor.fetchone()[0]
+            cursor.close()
+            cnx.close()
+
+    except mysql.Error as err:
+        logging.error("Error while getting password from DB : %s", err)
         cursor.close()
-
-    cnx.close()
+        cnx.close()
+        return None
     return result
 
 
@@ -167,7 +186,7 @@ def create_hashed_password(plain_text_password):
     * Return        : Hashed password
     * Param         : plain_text_password
     """
-    return bcrypt.hashpw(plain_text_password, bcrypt.gensalt())
+    return bcrypt.hashpw(plain_text_password.encode("utf-8"), bcrypt.gensalt())
 
 
 def check_password(plain_text_password, hashed_password):
@@ -180,7 +199,7 @@ def check_password(plain_text_password, hashed_password):
         return False
     if not isinstance(hashed_password, str):
         raise TypeError("hashed_password must be a string")
-    return bcrypt.checkpw(plain_text_password, hashed_password)
+    return bcrypt.checkpw(plain_text_password.encode("utf-8"), hashed_password.encode("utf-8"))
 
 
 def check_email_in_db(email):
@@ -191,9 +210,16 @@ def check_email_in_db(email):
     """
     cnx = connect_db()
     cursor = cnx.cursor()
-    cursor.execute("SELECT * FROM users WHERE email = %s", email)
-    if cursor.fetchone():
-        return True
+    cursor.execute("SELECT email FROM Users")
+    result = []
+    for email_db in cursor:
+        print(email_db)
+        if email_db[0] == email:
+            cursor.close()
+            cnx.close()
+            return True
+    cursor.close()
+    cnx.close()
     return False
 
 
@@ -203,6 +229,7 @@ def check_email_exists(email):
     * Return        : True if the email exists, False otherwise
     * Param         : email
     """
+    return True
     email = str(email)
     domain = "z.imt.fr"
     try:
