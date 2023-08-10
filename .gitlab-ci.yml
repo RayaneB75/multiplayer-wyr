@@ -15,8 +15,8 @@ services:
   - name: $RUNNER_IMAGE
     alias: docker
 
-trivy:
-  stage: test
+Trivy:
+  stage: security
   image: docker:stable
   services:
     - name: docker:dind
