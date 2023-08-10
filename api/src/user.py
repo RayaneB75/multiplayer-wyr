@@ -4,25 +4,98 @@
     * Version       : 1.0
     * Creation Date : 07/08/2023
 """
+import os
 import logging
+import smtplib
+import random
 import bcrypt
+import mysql.connector as mysql
 from flask import request
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
 )
-from src.Database.connect import connect_db
-from src.Misc.json_maker import return_json
+from Database.connect import connect_db
+from Misc.json_maker import return_json
+
+
+def open_session():
+    """
+    * Function      : open_session()
+    * Description   : Opens a session for a user with the JWT secret key.
+    * Return        : Json with the token and the refresh token
+    * Param         : None
+    """
+    if not request.is_json:
+        logging.error("/openSession: no data passed to login fonction")
+        return return_json()
+
+    try:
+        _json = request.json
+    except Exception as err:
+        logging.error("/openSession: json parsing error data -> %s", str(request.args))
+        raise err
+    if not isinstance(_json, dict):
+        logging.error("/openSession: json is not dictionnary format")
+        # logging.error(str(_json))
+        return return_json()
+
+    name = _json.get("name", None)
+    password = _json.get("password", None)
+    valid_password = False
+    if os.getenv("FRONT_TOKEN") == password:
+        valid_password = True
+
+    if valid_password:
+        token = create_access_token(identity=name)
+        refresh_token = create_refresh_token(identity=name)
+        return return_json({"token": token, "refresh_token": refresh_token})
+
+    logging.error("/openSession: Passwords mismatch")
+    return return_json()
 
 
 # POST /register
 def register():
     """
-    Registers the user in the database
-        * Return        : 200 OK if the user has been registered successfully
-        * Param         : username, password, email
+    Register users in the database.
+
+    This function registers users by performing the following checks:
+    - Check if the email is not already in the database.
+    - Check if the email exists via an SMTP call to z.imt.fr.
+    If both checks pass, the user is added to the database.
+
+    This function uses the MySQL connector and Flask request (POST) to get data.
     """
-    return "Register"
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    # Check if the email exists via SMTP call to z.imt.fr
+    if not check_email_exists(email):
+        return return_json("Invalid email.")
+
+    if check_email_in_db(email):
+        return return_json("Email already exists.")
+    # Generate a random 6-digit ID
+    user_id = random.randint(100000, 999999)
+    score = 0
+    cnx = connect_db()
+    try:
+        cursor = cnx.cursor()
+        # Insert user data into the database
+        cursor.execute(
+            "INSERT INTO users (email, password, score, user_id) VALUES (%s, %d, %s, %s)",
+            (email, password, score, user_id),
+        )
+        cursor.commit()
+    except mysql.Error as err:
+        logging.error("Error while inserting user data into the database : %s", err)
+        cursor.close()
+        cnx.close()
+        return return_json("Error while inserting user data into the database : ")
+    cursor.close()
+    cnx.close()
+    return return_json("User registered successfully.")
 
 
 # POST /login
@@ -45,7 +118,6 @@ def login():
         raise err
     if not isinstance(_json, dict):
         logging.error("/login: json is not dictionary format")
-        # logging.error(str(_json))
         return return_json()
 
     email = _json.get("email", None)
@@ -92,6 +164,8 @@ def create_hashed_password(plain_text_password):
     """
     Hash a password for the first time
     (Using bcrypt, the salt is saved into the hash itself)
+    * Return        : Hashed password
+    * Param         : plain_text_password
     """
     return bcrypt.hashpw(plain_text_password, bcrypt.gensalt())
 
@@ -99,9 +173,50 @@ def create_hashed_password(plain_text_password):
 def check_password(plain_text_password, hashed_password):
     """
     Check hashed password. Using bcrypt, the salt is saved into the hash itself
+    * Return        : True if the password is correct, False otherwise
+    * Param         : plain_text_password, hashed_password
     """
     if hashed_password is None:
         return False
     if not isinstance(hashed_password, str):
-        raise Exception
+        raise TypeError("hashed_password must be a string")
     return bcrypt.checkpw(plain_text_password, hashed_password)
+
+
+def check_email_in_db(email):
+    """
+    Check if the email is already in the database
+        * Return        : True if the email is in the database, False otherwise
+        * Param         : email
+    """
+    cnx = connect_db()
+    cursor = cnx.cursor()
+    cursor.execute("SELECT * FROM users WHERE email = %s", email)
+    if cursor.fetchone():
+        return True
+    return False
+
+
+def check_email_exists(email):
+    """
+    Code to check if the email exists using SMTP
+    * Return        : True if the email exists, False otherwise
+    * Param         : email
+    """
+    email = str(email)
+    domain = "z.imt.fr"
+    try:
+        with smtplib.SMTP(domain) as server:
+            server.helo()
+            code, _ = server.rcpt(email)
+            print(code)
+            if code == 250:
+                return True
+            return True  # To be changed to False when the SMTP call is implemented
+    except smtplib.SMTPRecipientsRefused:
+        return False
+    except (smtplib.SMTPConnectError, smtplib.SMTPServerDisconnected):
+        return False
+    except smtplib.SMTPException as err:
+        logging.error("Error while checking email : %s", err)
+    return False

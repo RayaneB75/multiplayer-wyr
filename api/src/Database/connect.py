@@ -9,14 +9,14 @@
 """
 import os
 import logging
-import mysql.connector
+import mysql.connector as mysql
 
 
 config = {
-    "database": os.getenv("MYSQL_DATABASE", "inte"),
+    "database": os.getenv("DB_DATABASE", "app_inte"),
     "user": os.getenv("MYSQL_USER", "api"),
     "password": os.getenv("MYSQL_PASSWORD"),
-    "host": os.getenv("MYSQL_HOST"),
+    "host": os.getenv("MYSQL_HOST", "localhost"),
     "port": os.getenv("MYSQL_PORT", "3306"),
     "raise_on_warnings": True,
 }
@@ -28,9 +28,10 @@ def connect_db():
     * Return        : cnx connection
     * Param         : None
     """
+    cnx = None
     try:
-        cnx = mysql.connector.connect(**config)
-    except mysql.connector.Error as err:
+        cnx = mysql.connect(**config)
+    except mysql.Error as err:
         logging.error("Cannot connect to DB")
         print(err)
     return cnx

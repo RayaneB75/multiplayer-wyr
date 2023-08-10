@@ -21,6 +21,7 @@ from flask_jwt_extended import JWTManager
 from user import (
     register,
     login,
+    open_session,
 )
 from game import (
     match,
@@ -29,8 +30,8 @@ from game import (
 )
 from Misc.healthcheck import healthcheck
 from Misc.json_maker import return_json
-from src.Database.connect import connect_db
-from src.Database.functions import (
+from Database.connect import connect_db
+from Database.functions import (
     create_db,
     delete_data,
 )
@@ -103,6 +104,7 @@ def after_req(returned_value):
     return returned_value
 
 
+app.add_url_rule("/openSession", "openSession", open_session, methods=["POST"])
 app.add_url_rule("/register", "refresh", register, methods=["POST"])
 app.add_url_rule("/login", "login", login, methods=["POST"])
 app.add_url_rule("/match", "match", match, methods=["POST"])
@@ -141,15 +143,14 @@ def main(*args, debug=False, run=False):
         if conn is not None:
             conn.close()
             print("== Connection succeed ==", file=stdout)
+            if app_args.clear_db:
+                delete_data()
+            if app_args.create_db:
+                create_db()
             break
         print("== Connection failed ==", file=stdout)
         cpt -= 1
         time.sleep(5)
-
-        if app_args.clear_db:
-            delete_data()
-        if app_args.create_db:
-            create_db()
 
     return app.run(debug=debug) if run else app
 

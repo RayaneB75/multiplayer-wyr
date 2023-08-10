@@ -1,5 +1,5 @@
 import mysql.connector.errors as mysql_errors
-from src.Database.connect import connect_db
+from Database.connect import connect_db
 from flask_jwt_extended import jwt_required
 from flask import Flask
 

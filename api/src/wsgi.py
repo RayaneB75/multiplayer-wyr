@@ -1,5 +1,5 @@
 import logging
-import src.app as main_module
+import app as main_module
 
 app = main_module.main()
 

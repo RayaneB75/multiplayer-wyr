@@ -5,19 +5,29 @@
     * Creation Date : 07/08/2023
 """
 import logging
-import mysql.connector
+import mysql.connector as mysql
 from mysql.connector import errorcode
-from src.Database.connect import connect_db
+from Database.connect import connect_db
 
 
 CREATE_TABLE_USERS = """\
 CREATE TABLE if not exists `Users` (
-    `email` varchar(40) NOT NULL UNIQUE,
+    `email` varchar(100) NOT NULL,
     `password` varchar(255) NOT NULL,
     `score` int(11),
+    `game_id` int(11),
     PRIMARY KEY (`email`)
-) ENGINE=InnoDB
+) ENGINE=InnoDB;
 """
+
+CREATE_TABLE_MATCHES = """\
+CREATE TABLE if not exists `Matches` (
+    `user1` varchar(100) NOT NULL,
+    `user2` varchar(100) NOT NULL,
+    PRIMARY KEY (`user1`,`user2`)
+) ENGINE=InnoDB;
+"""
+
 
 CREATE_TABLE_GAME = """\
 CREATE TABLE if not exists `Game` (
@@ -25,17 +35,19 @@ CREATE TABLE if not exists `Game` (
     `firstProp` varchar(255) NOT NULL,
     `secondProp` varchar(255) NOT NULL,
     PRIMARY KEY (`question_id`)
-) ENGINE=InnoDB
+) ENGINE=InnoDB;
 """
 
 create_tables = {
     "Users": CREATE_TABLE_USERS,
     "Game": CREATE_TABLE_GAME,
+    "Matches": CREATE_TABLE_MATCHES,
 }
 
 delete_tables = {
     "Users": "DELETE FROM Users",
     "Game": "DELETE FROM Game",
+    "Matches": "DELETE FROM Matches",
 }
 
 
@@ -57,7 +69,7 @@ def create_db():
         msg = "OK"
         try:
             cursor.execute(description)
-        except mysql.connector.Error as err:
+        except mysql.Error as err:
             if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
                 msg = "already exists."
             else:
