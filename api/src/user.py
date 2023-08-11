@@ -14,6 +14,8 @@ from flask import request
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
+    jwt_required,
+    get_jwt_identity,
 )
 from Database.connect import connect_db
 from Misc.json_maker import return_json
@@ -34,10 +36,9 @@ def open_session():
         _json = request.json
     except Exception as err:
         logging.error("/openSession: json parsing error data -> %s", str(request.args))
-        raise err
+        return (return_json(f"/openSession: json parsing error data -> {str(request.args)}"))
     if not isinstance(_json, dict):
         logging.error("/openSession: json is not dictionnary format")
-        # logging.error(str(_json))
         return return_json()
 
     name = _json.get("name", None)
@@ -54,8 +55,8 @@ def open_session():
     logging.error("/openSession: Passwords mismatch")
     return return_json()
 
-
 # POST /register
+@jwt_required()
 def register():
     """
     Register users in the database.
@@ -67,6 +68,10 @@ def register():
 
     This function uses the MySQL connector and Flask request (POST) to get data.
     """
+    jwt_identity = get_jwt_identity()
+    if jwt_identity != "front":
+        return return_json("Unauthorized")
+    
     if not request.is_json:
         logging.error("/register: no data passed to login fonction")
         return return_json()
@@ -87,13 +92,15 @@ def register():
     if not check_email_exists(email):
         return return_json("Invalid email.")
 
-    if check_email_in_db(email):
+    if is_user_in_db(email, "email"):
         return return_json("Email already exists.")
     # Generate a random 6-digit ID
     user_id = random.randint(100000, 999999)
     score = 0
     try:
         cnx = connect_db()
+        if cnx is None:
+            return return_json("Cannot connect to DB")
         cursor = cnx.cursor()
         # Insert user data into the database
         cursor.execute(
@@ -103,8 +110,6 @@ def register():
         cnx.commit()
     except mysql.Error as err:
         logging.error("Error while inserting user data into the database : %s", err)
-        cursor.close()
-        cnx.close()
         return return_json("Error while inserting user data into the database : ")
     cursor.close()
     cnx.close()
@@ -112,6 +117,7 @@ def register():
 
 
 # POST /login
+@jwt_required()
 def login():
     """
     Logs the user in
@@ -119,7 +125,10 @@ def login():
         401 Unauthorized if the user is not registered
         * Param         : username, password
     """
-
+    jwt_identity = get_jwt_identity()
+    if jwt_identity != "front":
+        return return_json("Unauthorized")
+    
     if not request.is_json:
         logging.error("/login: no data passed to login function")
         return return_json()
@@ -163,6 +172,7 @@ def get_db_password(email):
 
         result = None
         if email:
+            
             cursor = cnx.cursor()
             query = "SELECT password FROM Users WHERE email = %s"
             val = (email,)
@@ -173,9 +183,8 @@ def get_db_password(email):
 
     except mysql.Error as err:
         logging.error("Error while getting password from DB : %s", err)
-        cursor.close()
-        cnx.close()
         return None
+    cnx.close()
     return result
 
 
@@ -202,19 +211,24 @@ def check_password(plain_text_password, hashed_password):
     return bcrypt.checkpw(plain_text_password.encode("utf-8"), hashed_password.encode("utf-8"))
 
 
-def check_email_in_db(email):
+def is_user_in_db(id, type):
     """
     Check if the email is already in the database
         * Return        : True if the email is in the database, False otherwise
         * Param         : email
     """
     cnx = connect_db()
+    if cnx is None:
+        logging.error("Cannot connect to DB")
+        return False
     cursor = cnx.cursor()
-    cursor.execute("SELECT email FROM Users")
-    result = []
-    for email_db in cursor:
-        print(email_db)
-        if email_db[0] == email:
+    if type == "email":
+        cursor.execute("SELECT email FROM Users")
+    elif type == "user_id":
+        cursor.execute("SELECT user_id FROM Users")
+
+    for item in cursor:
+        if item[0] == id or str(item[0]) == id:
             cursor.close()
             cnx.close()
             return True
@@ -247,3 +261,28 @@ def check_email_exists(email):
     except smtplib.SMTPException as err:
         logging.error("Error while checking email : %s", err)
     return False
+
+def email_to_user_id(email):
+    """
+    Get the user_id of user in the database
+        * Return        : user_id of the user
+        * Param         : email
+    """
+    try:
+        cnx = connect_db()
+        if cnx is None:
+            logging.error("Cannot connect to DB")
+            return None
+
+        result = None
+        cursor = cnx.cursor()
+        query = "SELECT user_id FROM Users WHERE email = %s"
+        val = (email,)
+        cursor.execute(query, val)
+        result = cursor.fetchone()[0]
+        cursor.close()
+        cnx.close()
+        return result
+    except mysql.Error as err:
+        logging.error("Error while getting user_id from DB : %s", err)
+        return None

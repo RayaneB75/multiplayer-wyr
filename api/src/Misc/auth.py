@@ -54,6 +54,7 @@ def check_authorisation(http_request):
     """
     # List of authorisation by application usage
     list_front = [
+        ["/openSession", "POST"],
         ["/register", "POST"],
         ["/login", "POST"],
         ["/match", "POST"],
