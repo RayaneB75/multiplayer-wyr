@@ -6,6 +6,9 @@ Chaque joueur doit trouver des partenaires durant la soirée pour répondre à d
 ## Auteurs
 - Rayane BELKHIR (FIP 2025)
 
+## Contributeurs
+- Louis RAVAUX (FIP 2025)
+
 ## Installation
 
 ### Prérequis
