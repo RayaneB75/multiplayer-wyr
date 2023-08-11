@@ -41,6 +41,12 @@ load_dotenv()
 
 STR_NOW = datetime.now().strftime("%Y-%m-%d")
 FORMAT = "[%(asctime)-15s] - %(levelname)s - %(message)s"
+
+# Creating log folder
+logsExist = os.path.exists("logs")
+if not logsExist:
+    os.makedirs("logs")
+
 LOGS_FOLDER = os.path.join(os.path.dirname(__file__), "logs")
 DAILY_LOG = os.path.join(LOGS_FOLDER, f"api_log-{STR_NOW}.log")
 fileHandler = logging.FileHandler(filename=os.path.abspath(DAILY_LOG))
