@@ -16,7 +16,7 @@ CREATE TABLE if not exists `Users` (
     `password` varchar(255) NOT NULL,
     `score` int(11),
     `game_id` int(11),
-    PRIMARY KEY (`email`)
+    PRIMARY KEY (`game_id`)
 ) ENGINE=InnoDB;
 """
 
@@ -24,7 +24,9 @@ CREATE_TABLE_MATCHES = """\
 CREATE TABLE if not exists `Matches` (
     `user1` varchar(100) NOT NULL,
     `user2` varchar(100) NOT NULL,
-    PRIMARY KEY (`user1`,`user2`)
+    PRIMARY KEY (`user1`,`user2`),
+    FOREIGN KEY (`user1`) REFERENCES Users(`game_id`),
+    FOREIGN KEY (`user2`) REFERENCES Users(`game_id`)
 ) ENGINE=InnoDB;
 """
 
