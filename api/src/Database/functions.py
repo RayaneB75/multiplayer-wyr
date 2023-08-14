@@ -14,8 +14,8 @@ CREATE_TABLE_USERS = """\
 CREATE TABLE if not exists `Users` (
     `email` varchar(100) NOT NULL,
     `password` varchar(255) NOT NULL,
-    `score` int,
-    `user_id` int,
+    `score` int NOT NULL,
+    `user_id` int NOT NULL,
     PRIMARY KEY (`email`),
     FOREIGN KEY (`email`) REFERENCES Ldap(`email`)   
 ) ENGINE=InnoDB;

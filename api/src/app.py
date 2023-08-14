@@ -61,7 +61,7 @@ logging.basicConfig(format=FORMAT, level=10, handlers=handlers, force=True)
 parser = argparse.ArgumentParser()
 parser.add_argument("--create-db", action="store_true")
 parser.add_argument("--clear-db", action="store_true")
-parser.add_argument("--loader-db", action="store_true")
+parser.add_argument("--reset-db", action="store_true")
 parser.add_argument("--init", action="store_true")
 
 
@@ -156,7 +156,7 @@ def main(*args, debug=False, run=False):
             if app_args.create_db:
                 logging.info("== Creating Database ==")
                 create_db()
-            if app_args.loader_db:
+            if app_args.reset_db:
                 logging.info("== Reseting Database ==")
                 reset_db()
             break
@@ -165,12 +165,3 @@ def main(*args, debug=False, run=False):
         time.sleep(5)
 
     return app.run(debug=debug) if run else app
-
-
-if __name__ == "__main__":
-    # Disable flask logs
-    app.logger.disabled = True
-    log = logging.getLogger("werkzeug")
-    log.disabled = True
-
-    app.run(debug=True)
