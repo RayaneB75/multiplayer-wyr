@@ -23,9 +23,9 @@ CREATE TABLE if not exists `Users` (
 
 CREATE_TABLE_MATCHES = """\
 CREATE TABLE if not exists `Matches` (
-    `user1` varchar(100) NOT NULL,
-    `user2` varchar(100) NOT NULL,
-    PRIMARY KEY (`user1`,`user2`)
+    `user_i` int NOT NULL,
+    `user_r` int NOT NULL,
+    PRIMARY KEY (`user_i`,`user_r`)
 ) ENGINE=InnoDB;
 """
 
@@ -78,7 +78,7 @@ def create_db():
     cnx = connect_db()
     if cnx is None:
         logging.error("db connection failed")
-        return "503: Un problème est survenu, veuillez réessayer plus tard"
+        return "404: Un problème est survenu, veuillez réessayer plus tard"
 
     cursor = cnx.cursor()
     tmpl_log = "Creating table {0:>10} : {1:<20}"
@@ -105,7 +105,7 @@ def delete_data(connection=None):
     """
     cnx = connect_db() if connection is None else connection
     if cnx is None:
-        return "503: Un problème est survenu, veuillez réessayer plus tard"
+        return "404: Un problème est survenu, veuillez réessayer plus tard"
 
     cursor = cnx.cursor()
     for query in delete_tables.values():
@@ -126,7 +126,7 @@ def reset_db():
     cnx = connect_db()
     if cnx is None:
         logging.error("db connection failed")
-        return "503: Un problème est survenu, veuillez réessayer plus tard"
+        return "404: Un problème est survenu, veuillez réessayer plus tard"
 
     cursor = cnx.cursor()
     tmpl_log = "Creating table {0:>10} : {1:<20}"
