@@ -15,7 +15,7 @@ from flask import Flask, json
 app = Flask(__name__)
 
 
-def return_json(data=None):
+def return_json(code, data=None):
     """
     Function name       : return_json
         * Description   : Return JSON with data
@@ -25,7 +25,7 @@ def return_json(data=None):
     # Send response in function of the result
     if data is not None:
         response = app.response_class(
-            response=json.dumps(data), status=200, mimetype="application/json"
+            response=json.dumps(data), status=code, mimetype="application/json"
         )
     else:
         response = app.response_class(
@@ -33,7 +33,7 @@ def return_json(data=None):
                 "A problem has occurred, "
                 "please try again later or contact administrator."
             ),
-            status=503,
+            status=code,
             mimetype="application/json",
         )
 

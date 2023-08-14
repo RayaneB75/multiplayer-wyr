@@ -45,3 +45,6 @@ python3 wsgi.py
 
 NB : On peut aussi lancer l'application avec des paramètres prédéfinis :
 - `python3 wsgi.py --init`
+- `python3 wsgi.py --create-db` (création des tables)
+- `python3 wsgi.py --clear-db` (vidage des tables)
+- `python3 wsgi.py --reset-db` (suppression et recréation des tables)

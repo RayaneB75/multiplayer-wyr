@@ -29,13 +29,13 @@ def open_session():
     """
     if not request.is_json:
         logging.error("/openSession: no data passed to login fonction")
-        return return_json()
+        return return_json(503, "no data passed to login fonction")
 
     try:
         _json = request.json
         if not isinstance(_json, dict):
             logging.error("/openSession: json is not dictionnary format")
-            return return_json()
+            return return_json(503, "json is not dictionnary format")
 
         name = _json.get("name", None)
         password = _json.get("password", None)
@@ -46,14 +46,14 @@ def open_session():
         if valid_password:
             token = create_access_token(identity=name)
             refresh_token = create_refresh_token(identity=name)
-            return return_json({"token": token, "refresh_token": refresh_token})
+            return return_json(200, {"token": token, "refresh_token": refresh_token})
 
         logging.error("/openSession: Passwords mismatch")
     except Exception as err:
         log = "/openSession: json parsing error data -> %s \n %s", str(request.args), err
         logging.error(log)
-        return (return_json(log))
-    return return_json("Passwords mismatch")
+        return (return_json(503, log))
+    return return_json(503, "Passwords mismatch")
 
 # POST /register
 @jwt_required()
@@ -70,11 +70,11 @@ def register():
     """
     jwt_identity = get_jwt_identity()
     if jwt_identity != "front":
-        return return_json("Unauthorized")
+        return return_json(503, "Unauthorized")
 
     if not request.is_json:
         logging.error("/register: no data passed to login fonction")
-        return return_json()
+        return return_json(503, "no data passed to login fonction")
 
     try:
         _json = request.json
@@ -83,25 +83,25 @@ def register():
         raise err
     if not isinstance(_json, dict):
         logging.error("/register: json is not dictionnary format")
-        return return_json()
+        return return_json(503, "json is not dictionnary format")
 
     email = _json.get("email", None)
     password = _json.get("password", None)
 
     # Check if the email exists in LDAP
     if not is_user_in_db(email, "email", "Ldap"):
-        return return_json("Invalid email.")
+        return return_json(503, "Invalid email.")
 
     # Check if the user is already registered
     if is_user_in_db(email, "email", "Users"):
-        return return_json("Email already exists.")
+        return return_json(503, "Email already exists.")
     # Generate a random 6-digit ID
     user_id = random.randint(100000, 999999)
     score = 0
     try:
         cnx = connect_db()
         if cnx is None:
-            return return_json("Cannot connect to DB")
+            return return_json(503, "Cannot connect to DB")
         cursor = cnx.cursor()
         # Insert user data into the database
         cursor.execute(
@@ -111,10 +111,10 @@ def register():
         cnx.commit()
     except mysql.Error as err:
         logging.error("Error while inserting user data into the database : %s", err)
-        return return_json("Error while inserting user data into the database : ")
+        return return_json(503, "Error while inserting user data into the database : ")
     cursor.close()
     cnx.close()
-    return return_json("User registered successfully.")
+    return return_json(200, "User registered successfully.")
 
 
 # POST /login
@@ -128,11 +128,11 @@ def login():
     """
     jwt_identity = get_jwt_identity()
     if jwt_identity != "front":
-        return return_json("Unauthorized")
+        return return_json(503, "Unauthorized")
 
     if not request.is_json:
         logging.error("/login: no data passed to login function")
-        return return_json()
+        return return_json(503, "no data passed to login function")
 
     try:
         _json = request.json
@@ -141,7 +141,7 @@ def login():
         raise err
     if not isinstance(_json, dict):
         logging.error("/login: json is not dictionary format")
-        return return_json()
+        return return_json(503, "json is not dictionary format")
 
     email = _json.get("email", None)
     password = _json.get("password", None)
@@ -153,10 +153,10 @@ def login():
     if valid_password:
         token = create_access_token(identity=email)
         refresh_token = create_refresh_token(identity=email)
-        return return_json({"token": token, "refresh_token": refresh_token})
+        return return_json(200, {"token": token, "refresh_token": refresh_token})
 
     logging.error("/login: Passwords mismatch")
-    return return_json("Wrong password.")
+    return return_json(503, "Wrong password.")
 
 
 def get_db_password(email):
