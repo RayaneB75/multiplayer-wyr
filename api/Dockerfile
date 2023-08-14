@@ -27,7 +27,7 @@ RUN mkdir -p /app/logs
 
 # Healthcheck
 HEALTHCHECK --interval=5m --timeout=3s \
-    CMD curl -f http://localhost:5000/ || exit 1
+    CMD curl -f http://localhost:5000/healthcheck || exit 1
 
 # Entrypoint
 EXPOSE 5000
