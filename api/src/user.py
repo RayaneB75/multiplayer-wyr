@@ -6,7 +6,6 @@
 """
 import os
 import logging
-import smtplib
 import random
 import bcrypt
 import mysql.connector as mysql
@@ -34,26 +33,27 @@ def open_session():
 
     try:
         _json = request.json
+        if not isinstance(_json, dict):
+            logging.error("/openSession: json is not dictionnary format")
+            return return_json()
+
+        name = _json.get("name", None)
+        password = _json.get("password", None)
+        valid_password = False
+        if os.getenv("FRONT_TOKEN") == password:
+            valid_password = True
+
+        if valid_password:
+            token = create_access_token(identity=name)
+            refresh_token = create_refresh_token(identity=name)
+            return return_json({"token": token, "refresh_token": refresh_token})
+
+        logging.error("/openSession: Passwords mismatch")
     except Exception as err:
-        logging.error("/openSession: json parsing error data -> %s", str(request.args))
-        return (return_json(f"/openSession: json parsing error data -> {str(request.args)}"))
-    if not isinstance(_json, dict):
-        logging.error("/openSession: json is not dictionnary format")
-        return return_json()
-
-    name = _json.get("name", None)
-    password = _json.get("password", None)
-    valid_password = False
-    if os.getenv("FRONT_TOKEN") == password:
-        valid_password = True
-
-    if valid_password:
-        token = create_access_token(identity=name)
-        refresh_token = create_refresh_token(identity=name)
-        return return_json({"token": token, "refresh_token": refresh_token})
-
-    logging.error("/openSession: Passwords mismatch")
-    return return_json()
+        log = "/openSession: json parsing error data -> %s \n %s", str(request.args), err
+        logging.error(log)
+        return (return_json(log))
+    return return_json("Passwords mismatch")
 
 # POST /register
 @jwt_required()
@@ -71,15 +71,15 @@ def register():
     jwt_identity = get_jwt_identity()
     if jwt_identity != "front":
         return return_json("Unauthorized")
-    
+
     if not request.is_json:
         logging.error("/register: no data passed to login fonction")
         return return_json()
-    
+
     try:
         _json = request.json
     except Exception as err:
-        logging.error("/register: json parsing error data -> " + str(request.args))
+        logging.error("/register: json parsing error data -> %s", str(request.args))
         raise err
     if not isinstance(_json, dict):
         logging.error("/register: json is not dictionnary format")
@@ -88,11 +88,12 @@ def register():
     email = _json.get("email", None)
     password = _json.get("password", None)
 
-    # Check if the email exists via SMTP call to z.imt.fr
-    if not check_email_exists(email):
+    # Check if the email exists in LDAP
+    if not is_user_in_db(email, "email", "Ldap"):
         return return_json("Invalid email.")
 
-    if is_user_in_db(email, "email"):
+    # Check if the user is already registered
+    if is_user_in_db(email, "email", "Users"):
         return return_json("Email already exists.")
     # Generate a random 6-digit ID
     user_id = random.randint(100000, 999999)
@@ -128,7 +129,7 @@ def login():
     jwt_identity = get_jwt_identity()
     if jwt_identity != "front":
         return return_json("Unauthorized")
-    
+
     if not request.is_json:
         logging.error("/login: no data passed to login function")
         return return_json()
@@ -172,7 +173,7 @@ def get_db_password(email):
 
         result = None
         if email:
-            
+
             cursor = cnx.cursor()
             query = "SELECT password FROM Users WHERE email = %s"
             val = (email,)
@@ -211,7 +212,7 @@ def check_password(plain_text_password, hashed_password):
     return bcrypt.checkpw(plain_text_password.encode("utf-8"), hashed_password.encode("utf-8"))
 
 
-def is_user_in_db(id, type):
+def is_user_in_db(iden, id_type, table):
     """
     Check if the email is already in the database
         * Return        : True if the email is in the database, False otherwise
@@ -222,13 +223,17 @@ def is_user_in_db(id, type):
         logging.error("Cannot connect to DB")
         return False
     cursor = cnx.cursor()
-    if type == "email":
-        cursor.execute("SELECT email FROM Users")
-    elif type == "user_id":
-        cursor.execute("SELECT user_id FROM Users")
+    if table == "Users":
+        if id_type == "email":
+            cursor.execute("SELECT email FROM Users")
+        elif id_type == "user_id":
+            cursor.execute("SELECT user_id FROM Users")
+    else:
+        cursor.execute("SELECT email FROM Ldap")
+        return False
 
     for item in cursor:
-        if item[0] == id or str(item[0]) == id:
+        if item[0] == iden or str(item[0]) == iden:
             cursor.close()
             cnx.close()
             return True
@@ -236,31 +241,6 @@ def is_user_in_db(id, type):
     cnx.close()
     return False
 
-
-def check_email_exists(email):
-    """
-    Code to check if the email exists using SMTP
-    * Return        : True if the email exists, False otherwise
-    * Param         : email
-    """
-    return True
-    email = str(email)
-    domain = "z.imt.fr"
-    try:
-        with smtplib.SMTP(domain) as server:
-            server.helo()
-            code, _ = server.rcpt(email)
-            print(code)
-            if code == 250:
-                return True
-            return True  # To be changed to False when the SMTP call is implemented
-    except smtplib.SMTPRecipientsRefused:
-        return False
-    except (smtplib.SMTPConnectError, smtplib.SMTPServerDisconnected):
-        return False
-    except smtplib.SMTPException as err:
-        logging.error("Error while checking email : %s", err)
-    return False
 
 def email_to_user_id(email):
     """

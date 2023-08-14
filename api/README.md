@@ -5,7 +5,15 @@
 
 ### Création de la base de données
 
-`docker run --name some-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=[] -e MYSQL_DATABASE=[] -e MYSQL_USER=[] -e MYSQL_PASSWORD=[] -d mysql:latest`
+```bash
+docker run --name some-mysql \
+    -p 3306:3306 \
+    -e MYSQL_ROOT_PASSWORD=[] \
+    -e MYSQL_DATABASE=[] \
+    -e MYSQL_USER=[] \
+    -e MYSQL_PASSWORD=[] \
+    -d mysql:latest
+```
 
 ### Lancement de l'application
 
@@ -35,3 +43,5 @@ pip install -r requirements.txt
 python3 wsgi.py
 ```
 
+NB : On peut aussi lancer l'application avec des paramètres prédéfinis :
+- `python3 wsgi.py --init`

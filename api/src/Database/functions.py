@@ -15,8 +15,8 @@ CREATE TABLE if not exists `Users` (
     `email` varchar(100) NOT NULL,
     `password` varchar(255) NOT NULL,
     `score` int(11),
-    `game_id` int(11),
-    PRIMARY KEY (`game_id`)
+    `user_id` int(11),
+    PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB;
 """
 
@@ -24,12 +24,9 @@ CREATE_TABLE_MATCHES = """\
 CREATE TABLE if not exists `Matches` (
     `user1` varchar(100) NOT NULL,
     `user2` varchar(100) NOT NULL,
-    PRIMARY KEY (`user1`,`user2`),
-    FOREIGN KEY (`user1`) REFERENCES Users(`game_id`),
-    FOREIGN KEY (`user2`) REFERENCES Users(`game_id`)
+    PRIMARY KEY (`user1`,`user2`)
 ) ENGINE=InnoDB;
 """
-
 
 CREATE_TABLE_GAME = """\
 CREATE TABLE if not exists `Game` (
@@ -40,16 +37,26 @@ CREATE TABLE if not exists `Game` (
 ) ENGINE=InnoDB;
 """
 
+CREATE_TABLE_LDAP = """\
+CREATE TABLE if not exists `Ldap` (
+    `email` varchar(255) NOT NULL,
+    PRIMARY KEY (`email`)
+) ENGINE=InnoDB;
+"""
+
+
 create_tables = {
     "Users": CREATE_TABLE_USERS,
     "Game": CREATE_TABLE_GAME,
     "Matches": CREATE_TABLE_MATCHES,
+    "Ldap": CREATE_TABLE_LDAP,
 }
 
 delete_tables = {
     "Users": "DELETE FROM Users",
     "Game": "DELETE FROM Game",
     "Matches": "DELETE FROM Matches",
+    "Ldap": "DELETE FROM Ldap",
 }
 
 
