@@ -14,9 +14,10 @@ CREATE_TABLE_USERS = """\
 CREATE TABLE if not exists `Users` (
     `email` varchar(100) NOT NULL,
     `password` varchar(255) NOT NULL,
-    `score` int(11),
-    `user_id` int(11),
-    PRIMARY KEY (`user_id`)
+    `score` int,
+    `user_id` int,
+    PRIMARY KEY (`email`),
+    FOREIGN KEY (`email`) REFERENCES Ldap(`email`)   
 ) ENGINE=InnoDB;
 """
 
@@ -30,7 +31,7 @@ CREATE TABLE if not exists `Matches` (
 
 CREATE_TABLE_GAME = """\
 CREATE TABLE if not exists `Game` (
-    `question_id` int(11) NOT NULL AUTO_INCREMENT,
+    `question_id` int NOT NULL AUTO_INCREMENT,
     `firstProp` varchar(255) NOT NULL,
     `secondProp` varchar(255) NOT NULL,
     PRIMARY KEY (`question_id`)
@@ -46,17 +47,24 @@ CREATE TABLE if not exists `Ldap` (
 
 
 create_tables = {
+    "Ldap": CREATE_TABLE_LDAP,
     "Users": CREATE_TABLE_USERS,
     "Game": CREATE_TABLE_GAME,
     "Matches": CREATE_TABLE_MATCHES,
-    "Ldap": CREATE_TABLE_LDAP,
 }
 
 delete_tables = {
-    "Users": "DELETE FROM Users",
-    "Game": "DELETE FROM Game",
     "Matches": "DELETE FROM Matches",
+    "Game": "DELETE FROM Game",
+    "Users": "DELETE FROM Users",
     "Ldap": "DELETE FROM Ldap",
+}
+
+drop_tables = {
+    "Matches": "DROP TABLE Matches",
+    "Game": "DROP TABLE Game",
+    "Users": "DROP TABLE Users",
+    "Ldap": "DROP TABLE Ldap",
 }
 
 
@@ -86,6 +94,7 @@ def create_db():
         print(tmpl_log.format(name, msg))
     cursor.close()
     cnx.close()
+    return "OK"
 
 
 def delete_data(connection=None):
@@ -105,3 +114,36 @@ def delete_data(connection=None):
     cursor.close()
 
     cnx.close()
+    return "OK"
+
+def reset_db():
+    """
+    Function name       : create_db()
+        * Function      : Create Table of database if not created
+        * Return        : Nothing
+        * Param         : None
+    """
+    cnx = connect_db()
+    if cnx is None:
+        logging.error("db connection failed")
+        return "503: Un problème est survenu, veuillez réessayer plus tard"
+
+    cursor = cnx.cursor()
+    tmpl_log = "Creating table {0:>10} : {1:<20}"
+
+    for query in drop_tables.values():
+        cursor.execute(query)
+
+    for name, description in create_tables.items():
+        msg = "OK"
+        try:
+            cursor.execute(description)
+        except mysql.Error as err:
+            if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+                msg = "already exists."
+            else:
+                msg = err.msg
+        print(tmpl_log.format(name, msg))
+    cursor.close()
+    cnx.close()
+    return "OK"

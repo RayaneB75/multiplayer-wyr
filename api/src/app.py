@@ -34,6 +34,7 @@ from Database.connect import connect_db
 from Database.functions import (
     create_db,
     delete_data,
+    reset_db
 )
 
 load_dotenv()
@@ -150,9 +151,14 @@ def main(*args, debug=False, run=False):
             conn.close()
             print("== Connection succeed ==", file=stdout)
             if app_args.clear_db:
+                logging.info("== Clearing Database ==")
                 delete_data()
             if app_args.create_db:
+                logging.info("== Creating Database ==")
                 create_db()
+            if app_args.loader_db:
+                logging.info("== Reseting Database ==")
+                reset_db()
             break
         print("== Connection failed ==", file=stdout)
         cpt -= 1
