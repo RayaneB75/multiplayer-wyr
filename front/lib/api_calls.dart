@@ -6,11 +6,13 @@ import 'package:http/http.dart' as http;
 
 Future<OpenSession> createOpenSession(String name, String password) async {
   final response = await http.post(
-    Uri.parse('http://localhost:48921/openSession?JWT_SECRET_KEY=secret'),
+    //Uri.parse('http://rayane.space:5000/openSession?JWT_SECRET_KEY=secret'),
+    //Uri.parse('http://localhost:48921/openSession?JWT_SECRET_KEY=secret'),
+    Uri.parse('http://localhost:5000/openSession?JWT_SECRET_KEY=secret'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
-    body: jsonEncode(<String, String>{
+    body: json.encode(<String, String>{
       'name': name,
       'password': password,
     }),
@@ -19,7 +21,7 @@ Future<OpenSession> createOpenSession(String name, String password) async {
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return OpenSession.fromJson(jsonDecode(response.body));
+    return OpenSession.fromJson(json.decode(response.body));
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
