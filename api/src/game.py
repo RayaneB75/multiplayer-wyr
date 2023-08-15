@@ -31,20 +31,20 @@ def match():
     user_i = email_to_user_id(user_i_email)
     if not request.is_json:
         logging.error("/match: no data passed to function")
-        return return_json(503, "no data passed to function")
+        return return_json(404, "no data passed to function")
 
     try:
         _json = request.json
         if not isinstance(_json, dict):
             logging.error("/match: json is not dictionnary format")
-            return return_json(503, "json is not dictionnary format")
+            return return_json(404, "json is not dictionnary format")
         user_r = _json.get("userId", None)
         if user_r is None:
-            return return_json(503, "userId is not in json")
+            return return_json(404, "userId is not in json")
         if not is_user_in_db(user_r, "user_id", "Users"):
-            return return_json(503, "User doesn't exist in database")
+            return return_json(404, "User doesn't exist in database")
         if not is_user_available(user_i, user_r):
-            return return_json(503, "User is not available")
+            return return_json(404, "User is not available")
     except Exception as err:
         logging.error(("/match: json parsing error data -> %s \n %s", str(request.args), err))
     return return_json(200, "Match")
@@ -64,19 +64,20 @@ def pull():
         cnx = connect_db()
         if cnx is None:
             logging.error("Cannot connect to DB")
-            return None
+            return return_json(404, "Cannot connect to DB")
         cursor = cnx.cursor()
         query = "SELECT firstProp, secondProp FROM Game WHERE question_id = %s"
         cursor.execute(query, (questionNumber,))
         if cursor.rowcount == 0:
-            return return_json(503. "No question found")
+            logging.error("No question found")
+            return return_json(404, "No question found")
         question = cursor.fetchone()
         cursor.close()
         cnx.close()
-        return True
     except mysql_errors.Error as err:
         logging.error("Error while getting user data from the database : %s", err)
-        return None
+        return return_json(404, "Error while getting user data from the database")
+    return return_json(200, {"firstProp": question[0], "secondProp": question[1]})
 
 
 @jwt_required()
