@@ -58,7 +58,7 @@ def pull():
         401 Unauthorized (multiple reasons)
         * Param         : -
     """
-    questionNumber = random.randint(0, 200)
+    question_number = random.randint(0, 200)
 
     try:
         cnx = connect_db()
@@ -67,7 +67,7 @@ def pull():
             return return_json(404, "Cannot connect to DB")
         cursor = cnx.cursor()
         query = "SELECT firstProp, secondProp FROM Game WHERE question_id = %s"
-        cursor.execute(query, (questionNumber,))
+        cursor.execute(query, (question_number,))
         if cursor.rowcount == 0:
             logging.error("No question found")
             return return_json(404, "No question found")
