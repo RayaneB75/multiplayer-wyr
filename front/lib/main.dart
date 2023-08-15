@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MaterialApp(
+  runApp( MaterialApp(
     title: 'Would You Rather',
-    home: Home(),
+    home: const Home(),
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+      useMaterial3: true, // material 3 babyyyy
+    ),
   ));
 }
 
@@ -26,6 +30,7 @@ class Home extends StatelessWidget {
               'Would you rather ...',
               style: TextStyle(fontSize: 20),
             ),
+            const SizedBox(height: 20),
             ElevatedButton(
               child: const Text('Register'),
               onPressed: () {
@@ -35,6 +40,7 @@ class Home extends StatelessWidget {
                 );
               },
             ),
+            const SizedBox(height: 20),
             ElevatedButton(
               child: const Text('Login'),
               onPressed: () {
@@ -59,6 +65,10 @@ class RegisterWindow extends StatelessWidget {
   Widget build(BuildContext context) {
     const appTitle = 'Register';
     return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true, // material 3 babyyyy
+      ),
       title: appTitle,
       home: Scaffold(
         appBar: AppBar(
@@ -83,7 +93,7 @@ class RegisterForm extends StatelessWidget {
           child: TextFormField(
             decoration: const InputDecoration(
               border: UnderlineInputBorder(),
-              labelText: 'Enter your username',
+              labelText: 'Enter your IMT Atlantique email',
             ),
           ),
         ),
@@ -117,6 +127,10 @@ class LoginWindow extends StatelessWidget {
   Widget build(BuildContext context) {
     const appTitle = 'Login';
     return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true, // material 3 babyyyy
+      ),
       title: appTitle,
       home: Scaffold(
         appBar: AppBar(
