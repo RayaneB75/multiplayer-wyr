@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_calls.dart';
+import 'package:frontend/register.dart';
+import 'package:frontend/login.dart';
 
 void main() {
   runApp( MaterialApp(
@@ -65,121 +67,6 @@ class Home extends StatelessWidget {
         ),
         
       ),
-    );
-  }
-}
-
-class RegisterWindow extends StatelessWidget {
-  const RegisterWindow({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    const appTitle = 'Register';
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true, // material 3 babyyyy
-      ),
-      title: appTitle,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text(appTitle),
-        ),
-        body: const RegisterForm(),
-      ),
-    );
-  }
-}
-
-class RegisterForm extends StatelessWidget {
-  const RegisterForm({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Enter your IMT Atlantique email',
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Enter your password',
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Enter your password again',
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class LoginWindow extends StatelessWidget {
-  const LoginWindow({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    const appTitle = 'Login';
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true, // material 3 babyyyy
-      ),
-      title: appTitle,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text(appTitle),
-        ),
-        body: const LoginForm(),
-      ),
-    );
-  }
-}
-
-class LoginForm extends StatelessWidget {
-  const LoginForm({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Enter your username',
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Enter your password',
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
