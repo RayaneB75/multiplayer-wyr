@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/api_calls.dart';
 
 void main() {
   runApp( MaterialApp(
@@ -47,6 +48,16 @@ class Home extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginWindow()),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              child: const Text('TEST API CALL'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TestApi()),
                 );
               },
             ),
