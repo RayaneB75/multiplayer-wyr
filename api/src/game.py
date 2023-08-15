@@ -7,7 +7,7 @@
 
 import logging
 import random
-import mysql.connector.errors as mysql_errors
+import psycopg as psql
 from flask import Flask, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from Database.connect import connect_db
@@ -46,8 +46,10 @@ def match():
         if not is_user_available(user_i, user_r):
             return return_json(404, "User is not available")
     except Exception as err:
-        logging.error(("/match: json parsing error data -> %s \n %s", str(request.args), err))
+        logging.error(
+            ("/match: json parsing error data -> %s \n %s", str(request.args), err))
     return return_json(200, "Match")
+
 
 @jwt_required()
 # GET /pull
@@ -74,8 +76,9 @@ def pull():
         question = cursor.fetchone()
         cursor.close()
         cnx.close()
-    except mysql_errors.Error as err:
-        logging.error("Error while getting user data from the database : %s", err)
+    except psql.Error as err:
+        logging.error(
+            "Error while getting user data from the database : %s", err)
         return return_json(404, "Error while getting user data from the database")
     return return_json(200, {"firstProp": question[0], "secondProp": question[1]})
 
@@ -90,6 +93,7 @@ def push():
         * Param         : answers
     """
     return "Push"
+
 
 def is_user_available(user_i, user_r):
     """
@@ -113,6 +117,7 @@ def is_user_available(user_i, user_r):
         cursor.close()
         cnx.close()
         return True
-    except mysql_errors.Error as err:
-        logging.error("Error while getting user data from the database : %s", err)
+    except psql.Error as err:
+        logging.error(
+            "Error while getting user data from the database : %s", err)
         return None

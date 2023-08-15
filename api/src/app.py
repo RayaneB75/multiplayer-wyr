@@ -44,8 +44,8 @@ STR_NOW = datetime.now().strftime("%Y-%m-%d")
 FORMAT = "[%(asctime)-15s] - %(levelname)s - %(message)s"
 
 # Creating log folder
-logs_exists = os.path.exists("logs")
-if not logs_exists:
+LOGS_EXISTS = os.path.exists("logs")
+if not LOGS_EXISTS:
     os.makedirs("logs")
 
 LOGS_FOLDER = os.path.join(os.path.dirname(__file__), "logs")
@@ -111,13 +111,15 @@ def after_req(returned_value):
     return returned_value
 
 
-app.add_url_rule("/openSession", "openSession", open_session, methods=["POST", "OPTIONS"])
+app.add_url_rule("/openSession", "openSession",
+                 open_session, methods=["POST", "OPTIONS"])
 app.add_url_rule("/register", "refresh", register, methods=["POST", "OPTIONS"])
 app.add_url_rule("/login", "login", login, methods=["POST", "OPTIONS"])
 app.add_url_rule("/match", "match", match, methods=["POST", "OPTIONS"])
 app.add_url_rule("/pull", "pull", pull, methods=["GET", "OPTIONS"])
 app.add_url_rule("/push", "push", push, methods=["POST", "OPTIONS"])
-app.add_url_rule("/healthcheck", "healthcheck", healthcheck, methods=["GET", "OPTIONS"])
+app.add_url_rule("/healthcheck", "healthcheck",
+                 healthcheck, methods=["GET", "OPTIONS"])
 
 
 def main(*args, debug=False, run=False):

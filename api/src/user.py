@@ -8,7 +8,7 @@ import os
 import logging
 import random
 import bcrypt
-import mysql.connector as mysql
+import psycopg as psql
 from flask import request
 from flask_jwt_extended import (
     create_access_token,
@@ -50,12 +50,15 @@ def open_session():
 
         logging.error("/openSession: Passwords mismatch")
     except Exception as err:
-        log = "/openSession: json parsing error data -> %s \n %s", str(request.args), err
+        log = "/openSession: json parsing error data -> %s \n %s", str(
+            request.args), err
         logging.error(log)
-        return (return_json(404, log))
+        return return_json(404, log)
     return return_json(404, "Passwords mismatch")
 
 # POST /register
+
+
 @jwt_required()
 def register():
     """
@@ -79,7 +82,8 @@ def register():
     try:
         _json = request.json
     except Exception as err:
-        logging.error("/register: json parsing error data -> %s", str(request.args))
+        logging.error("/register: json parsing error data -> %s",
+                      str(request.args))
         raise err
     if not isinstance(_json, dict):
         logging.error("/register: json is not dictionnary format")
@@ -109,8 +113,9 @@ def register():
             (email, create_hashed_password(password), score, user_id),
         )
         cnx.commit()
-    except mysql.Error as err:
-        logging.error("Error while inserting user data into the database : %s", err)
+    except psql.Error as err:
+        logging.error(
+            "Error while inserting user data into the database : %s", err)
         return return_json(404, "Error while inserting user data into the database : ")
     cursor.close()
     cnx.close()
@@ -137,7 +142,8 @@ def login():
     try:
         _json = request.json
     except Exception:
-        logging.error("/login: json parsing error data -> %s", str(request.args))
+        logging.error("/login: json parsing error data -> %s",
+                      str(request.args))
         return return_json(404, ("json parsing error data -> %s", str(request.args)))
     if not isinstance(_json, dict):
         logging.error("/login: json is not dictionary format")
@@ -186,7 +192,7 @@ def get_db_password(email):
             result = cursor.fetchone()[0]
             cursor.close()
 
-    except mysql.Error as err:
+    except psql.Error as err:
         logging.error("Error while getting password from DB : %s", err)
         return None
     cnx.close()
@@ -265,6 +271,6 @@ def email_to_user_id(email):
         cursor.close()
         cnx.close()
         return result
-    except mysql.Error as err:
+    except psql.Error as err:
         logging.error("Error while getting user_id from DB : %s", err)
         return None

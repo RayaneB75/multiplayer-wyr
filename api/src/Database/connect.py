@@ -5,20 +5,19 @@
     * Creation Date : 07/08/2023
     * Imports       :
         - mysql_properties : Properties of the database
-        - mysql.connector library
+        - psycopg library
 """
 import os
 import logging
-import mysql.connector as mysql
+import psycopg as psql
 
 
 config = {
-    "database": os.getenv("DB_DATABASE", "app_inte"),
-    "user": os.getenv("MYSQL_USER", "api"),
-    "password": os.getenv("MYSQL_PASSWORD", "api"),
-    "host": os.getenv("MYSQL_HOST", "localhost"),
-    "port": os.getenv("MYSQL_PORT", "3306"),
-    "raise_on_warnings": True,
+    "dbname": os.getenv("POSTGRES_DB", "app_inte"),
+    "user": os.getenv("POSTGRES_USER", "api"),
+    "password": os.getenv("POSTGRES_PASSWORD", "api"),
+    "host": os.getenv("POSTGRES_HOST", "localhost"),
+    "port": os.getenv("POSTGRES_PORT", "5432"),
 }
 
 
@@ -30,8 +29,8 @@ def connect_db():
     """
     cnx = None
     try:
-        cnx = mysql.connect(**config)
-    except mysql.Error as err:
+        cnx = psql.connect(**config)
+    except psql.Error as err:
         logging.error("Cannot connect to DB")
         print(err)
     return cnx

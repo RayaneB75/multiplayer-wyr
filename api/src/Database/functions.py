@@ -5,44 +5,43 @@
     * Creation Date : 07/08/2023
 """
 import logging
-import mysql.connector as mysql
-from mysql.connector import errorcode
+from psycopg import errors as errorcode
 from Database.connect import connect_db
 
 
 CREATE_TABLE_USERS = """\
-CREATE TABLE if not exists `Users` (
-    `email` varchar(100) NOT NULL,
-    `password` varchar(255) NOT NULL,
-    `score` int NOT NULL,
-    `user_id` int NOT NULL,
-    PRIMARY KEY (`email`),
-    FOREIGN KEY (`email`) REFERENCES Ldap(`email`)   
-) ENGINE=InnoDB;
+CREATE TABLE if not exists Users (
+    email varchar(100) NOT NULL,
+    password varchar(255) NOT NULL,
+    score int NOT NULL,
+    user_id serial NOT NULL,
+    PRIMARY KEY (user_id),
+    FOREIGN KEY (email) REFERENCES Ldap(email)   
+);
 """
 
 CREATE_TABLE_MATCHES = """\
-CREATE TABLE if not exists `Matches` (
-    `user_i` int NOT NULL,
-    `user_r` int NOT NULL,
-    PRIMARY KEY (`user_i`,`user_r`)
-) ENGINE=InnoDB;
+CREATE TABLE if not exists Matches (
+    user_i serial NOT NULL,
+    user_r serial NOT NULL,
+    PRIMARY KEY (user_i, user_r)
+);
 """
 
 CREATE_TABLE_GAME = """\
-CREATE TABLE if not exists `Game` (
-    `question_id` int NOT NULL AUTO_INCREMENT,
-    `firstProp` varchar(255) NOT NULL,
-    `secondProp` varchar(255) NOT NULL,
-    PRIMARY KEY (`question_id`)
-) ENGINE=InnoDB;
+CREATE TABLE if not exists Game (
+    question_id serial NOT NULL,
+    firstProp varchar(255) NOT NULL,
+    secondProp varchar(255) NOT NULL,
+    PRIMARY KEY (question_id)
+);
 """
 
 CREATE_TABLE_LDAP = """\
-CREATE TABLE if not exists `Ldap` (
-    `email` varchar(255) NOT NULL,
-    PRIMARY KEY (`email`)
-) ENGINE=InnoDB;
+CREATE TABLE if not exists Ldap (
+    email varchar(255) NOT NULL,
+    PRIMARY KEY (email)
+);
 """
 
 
@@ -86,11 +85,10 @@ def create_db():
         msg = "OK"
         try:
             cursor.execute(description)
-        except mysql.Error as err:
-            if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
-                msg = "already exists."
-            else:
-                msg = err.msg
+        except errorcode.DuplicateTable:
+            msg = "already exists."
+        except errorcode.Error as err:
+            msg = str(err)
         print(tmpl_log.format(name, msg))
     cursor.close()
     cnx.close()
@@ -116,6 +114,7 @@ def delete_data(connection=None):
     cnx.close()
     return "OK"
 
+
 def reset_db():
     """
     Function name       : create_db()
@@ -138,11 +137,10 @@ def reset_db():
         msg = "OK"
         try:
             cursor.execute(description)
-        except mysql.Error as err:
-            if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
-                msg = "already exists."
-            else:
-                msg = err.msg
+        except errorcode.DuplicateTable:
+            msg = "already exists."
+        except errorcode.Error as err:
+            msg = str(err)
         print(tmpl_log.format(name, msg))
     cursor.close()
     cnx.close()
