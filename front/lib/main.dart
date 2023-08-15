@@ -18,7 +18,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Would you rather ...'),
+        //title: const Text('Would you rather ...'),
       ),
       body: Center(
         child: Column(
@@ -30,7 +30,7 @@ class Home extends StatelessWidget {
               'Would you rather ...',
               style: TextStyle(fontSize: 20),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             ElevatedButton(
               child: const Text('Register'),
               onPressed: () {
