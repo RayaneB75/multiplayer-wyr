@@ -56,7 +56,7 @@ def open_session():
         log = "/openSession: json parsing error data -> %s \n %s", str(
             request.args), err
         logging.error(log)
-        return (return_json(404, log))
+        return return_json(404, log)
     return return_json(404, "Passwords mismatch")
 
 # POST /register

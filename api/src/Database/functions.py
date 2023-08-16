@@ -6,6 +6,7 @@
 """
 import logging
 import mysql.connector as mysql
+from pandas import read_csv
 from mysql.connector import errorcode
 from Database.connect import connect_db
 
@@ -32,8 +33,8 @@ CREATE TABLE if not exists `Matches` (
 CREATE_TABLE_GAME = """\
 CREATE TABLE if not exists `Game` (
     `question_id` int NOT NULL AUTO_INCREMENT,
-    `firstProp` varchar(255) NOT NULL,
-    `secondProp` varchar(255) NOT NULL,
+    `first_prop` varchar(255) NOT NULL,
+    `second_prop` varchar(255) NOT NULL,
     PRIMARY KEY (`question_id`)
 ) ENGINE=InnoDB;
 """
@@ -116,6 +117,7 @@ def delete_data(connection=None):
     cnx.close()
     return "OK"
 
+
 def reset_db():
     """
     Function name       : create_db()
@@ -147,3 +149,46 @@ def reset_db():
     cursor.close()
     cnx.close()
     return "OK"
+
+
+def load_db():
+    """
+    Function name       : load_db()
+        * Function      : Load data into Ldap and Game tables
+        * Return        : Boolean 
+        * Param         : None
+    """
+    try:
+        cnx = connect_db()
+        cursor = cnx.cursor()
+        if cnx is None:
+            logging.error("db connection failed")
+            return False
+        # with open(file="Database/mails.export", mode="r", encoding="utf-8") as ldap_file:
+        #     query = "SELECT email FROM Ldap"
+        #     if cursor.execute(query) != 0:
+        #         logging.debug("DB table already filled")
+        #         ldap_file.close()
+        #         return True
+        #     query = "INSERT INTO Ldap (email) VALUES (%s)"
+        #     cursor.executemany(query, [(line.strip(),) for line in ldap_file])
+        #     cnx.commit()
+        #     ldap_file.close()
+        with read_csv(filepath_or_buffer="Database/game.csv") as game_file:
+            new_dict = game_file.to_dict()
+            query = "SELECT email FROM Game"
+            if cursor.execute(query) != 0:
+                logging.debug("Game table already filled")
+                game_file.close()
+            query = "INSERT INTO Game (question_id, first_prop, second_prop) VALUES (%s, %s, %s)"
+            cursor.executemany(query, [(value[0], value[1], value[2])
+                               for value in new_dict.items()])
+            cnx.commit()
+            game_file.close()
+    except mysql.Error as err:
+        logging.error(
+            "Error while loading data into the database : %s", err)
+        return False
+    finally:
+        cnx.close()
+    return True
