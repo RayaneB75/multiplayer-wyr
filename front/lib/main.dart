@@ -7,10 +7,9 @@ void main() {
   runApp( MaterialApp(
     title: 'Would You Rather',
     home: const Home(),
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-      useMaterial3: true, // material 3 babyyyy
-    ),
+    theme: ThemeData.dark(
+        useMaterial3: true,
+        ),
   ));
 }
 

@@ -28,11 +28,15 @@ class CardExample extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Choice(),
+          Choice(
+            buttonText: "Installer NeoVim",
+          ),
           SizedBox(height: 50),
           Text('Would You Rather ?', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
           SizedBox(height: 50),
-          Choice(),
+          Choice(
+            buttonText: "Installer Emacs",
+          ),
         ],
       ),
     );
@@ -40,32 +44,22 @@ class CardExample extends StatelessWidget {
 }
 
 class Choice extends StatelessWidget {
-    const Choice({super.key});
+  final String buttonText;
 
-    @override
+  const Choice({Key? key, required this.buttonText}) : super(key: key);
+
+  @override
   Widget build(BuildContext context) {
-    return Card(
-        child: Column(
-          children: <Widget>[
-            const ListTile(
-              //leading: Icon(Icons.album),
-              title: Text('SAMPLE QUESTION'),
-            subtitle: Text('sample description'),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                TextButton(
-                  child: const Text('Sample Button'),
-                  onPressed: () {/* ... */},
-                ),
-                const SizedBox(width: 8),
-              ],
-            ),
-          ],
+    return SizedBox(
+      width: 300.0,
+      height: 100.0,
+      child: ElevatedButton(
+        onPressed: () {},
+        child: Text(
+          buttonText,
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)
         ),
-      );
+      ),
+    );
   }
-
-
 }
