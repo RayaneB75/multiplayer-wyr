@@ -44,6 +44,35 @@ class FindMatchForm extends StatelessWidget {
             child: const Text('GO !'),
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: ElevatedButton(
+            onPressed: () {
+                showModalBottomSheet<void>(
+                context: context,
+                builder: (BuildContext context) {
+                  return const SizedBox(
+                    height: 200,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                        Text('Player ID'),
+                          // ElevatedButton(
+                          //   child: const Text('Close BottomSheet'),
+                          //   onPressed: () => Navigator.pop(context),
+                          // ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+            child: const Text('Show player ID'),
+          ),
+        ),
       ],
     );
   }
