@@ -6,18 +6,12 @@ class LoginWindow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const appTitle = 'Login';
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true, // material 3 babyyyy
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
       ),
-      title: appTitle,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text(appTitle),
-        ),
-        body: const LoginForm(),
+      body: const Center(
+        child: LoginForm()
       ),
     );
   }
