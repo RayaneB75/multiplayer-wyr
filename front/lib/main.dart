@@ -52,9 +52,9 @@ class Home extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 100),
             ElevatedButton(
-              child: const Text('TEST API CALL'),
+              child: const Text('TEST API'),
               onPressed: () {
                 Navigator.push(
                   context,
