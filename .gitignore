@@ -16,3 +16,4 @@
 
 # App functionning
 *.env
+**/application_data/
