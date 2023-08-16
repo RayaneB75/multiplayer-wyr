@@ -8,6 +8,12 @@
 
 # Python
 **/__pycache__/
+**/logs/
 
 # VSCode
 .vscode/
+
+
+# App functionning
+*.env
+**/application_data/
