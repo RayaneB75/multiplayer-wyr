@@ -6,9 +6,9 @@ import 'package:http/http.dart' as http;
 
 Future<OpenSession> createOpenSession(String name, String password) async {
   final response = await http.post(
-    //Uri.parse('http://rayane.space:5000/openSession?JWT_SECRET_KEY=secret'),
+    Uri.parse('http://rayane.space:5000/openSession?JWT_SECRET_KEY=secret'),
     //Uri.parse('http://localhost:48921/openSession?JWT_SECRET_KEY=secret'),
-    Uri.parse('http://localhost:5000/openSession?JWT_SECRET_KEY=secret'),
+    //Uri.parse('http://localhost:5000/openSession?JWT_SECRET_KEY=secret'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
