@@ -30,9 +30,9 @@ class Home extends StatelessWidget {
           children: [
             const Text(
               'Would you rather ...',
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 30),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 120),
             ElevatedButton(
               child: const Text('Register'),
               onPressed: () {

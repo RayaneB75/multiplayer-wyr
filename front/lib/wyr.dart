@@ -9,7 +9,22 @@ class CardExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //title: const Text('Would You Rather'),
+        title: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: Text(
+              "Would you rather ?",
+              ),
+            ),
+            GestureDetector(
+              child: const Text('sample subtitle', style: TextStyle(fontSize: 13)),
+              onTap: () {
+                
+              },
+            )
+          ]
+        ),
       ),
       body: const Center(
         child: CardExample()
@@ -32,7 +47,7 @@ class CardExample extends StatelessWidget {
             buttonText: "Installer NeoVim",
           ),
           SizedBox(height: 50),
-          Text('Would You Rather ?', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+          Text('OR', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
           SizedBox(height: 50),
           Choice(
             buttonText: "Installer Emacs",

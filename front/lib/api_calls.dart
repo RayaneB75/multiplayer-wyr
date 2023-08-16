@@ -60,8 +60,7 @@ class _TestApiState extends State<TestApi> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Test API',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      theme: ThemeData.dark(
         useMaterial3: true,
       ),
       home: Scaffold(
@@ -83,15 +82,16 @@ class _TestApiState extends State<TestApi> {
       children: <Widget>[
         TextField(
           controller: _controller,
-          decoration: const InputDecoration(hintText: 'Enter login'),
+          decoration: const InputDecoration(hintText: 'Enter password'),
         ),
+        const SizedBox(height: 8),
         ElevatedButton(
           onPressed: () {
             setState(() {
               _futureOpenSession = createOpenSession(_controller.text, "thisIsFront");
             });
           },
-          child: const Text('Create Data'),
+          child: const Text('Send Request'),
         ),
       ],
     );
@@ -102,7 +102,7 @@ class _TestApiState extends State<TestApi> {
       future: _futureOpenSession,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return Text(snapshot.data!.token);
+          return Text("token:\n\n" + snapshot.data!.token);
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');
         }

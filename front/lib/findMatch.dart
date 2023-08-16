@@ -9,7 +9,7 @@ class FindMatchWindow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Find Match !'),
+        //title: const Text('Find Match !'),
       ),
       body: const Center(
         child: FindMatchForm()
@@ -27,8 +27,16 @@ class FindMatchForm extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
+
+        const Text(
+          'Find Match !',
+          style: TextStyle(fontSize: 30),
+        ),
+
+        const SizedBox(height: 120),
+
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
           child: TextFormField(
             decoration: const InputDecoration(
               border: OutlineInputBorder(),

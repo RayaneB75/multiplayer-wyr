@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/findMatch.dart';
+import 'package:frontend/items.dart';
 
 class LoginWindow extends StatelessWidget {
   const LoginWindow({super.key});
@@ -8,7 +9,7 @@ class LoginWindow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        //title: const Text('Login'),
       ),
       body: const Center(
         child: LoginForm()
@@ -27,24 +28,17 @@ class LoginForm extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Enter your username',
-            ),
-          ),
+
+        const Text(
+          'Login',
+          style: TextStyle(fontSize: 30),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Enter your password',
-            ),
-          ),
-        ),
+
+        const SizedBox(height: 120),
+
+        const TextFieldCustom(content: "Enter your username"),
+        const TextFieldCustom(content: "Enter your password"),
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: ElevatedButton(
