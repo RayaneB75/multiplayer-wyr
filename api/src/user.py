@@ -40,6 +40,9 @@ def open_session():
         name = _json.get("name", None)
         password = _json.get("password", None)
         valid_password = False
+        if not "front" == name or "dash" == name:
+            return return_json(404, "Wrong username")
+
         if os.getenv("FRONT_TOKEN") == password:
             valid_password = True
 
@@ -50,12 +53,15 @@ def open_session():
 
         logging.error("/openSession: Passwords mismatch")
     except Exception as err:
-        log = "/openSession: json parsing error data -> %s \n %s", str(request.args), err
+        log = "/openSession: json parsing error data -> %s \n %s", str(
+            request.args), err
         logging.error(log)
         return (return_json(404, log))
     return return_json(404, "Passwords mismatch")
 
 # POST /register
+
+
 @jwt_required()
 def register():
     """
@@ -79,7 +85,8 @@ def register():
     try:
         _json = request.json
     except Exception as err:
-        logging.error("/register: json parsing error data -> %s", str(request.args))
+        logging.error("/register: json parsing error data -> %s",
+                      str(request.args))
         raise err
     if not isinstance(_json, dict):
         logging.error("/register: json is not dictionnary format")
@@ -110,7 +117,8 @@ def register():
         )
         cnx.commit()
     except mysql.Error as err:
-        logging.error("Error while inserting user data into the database : %s", err)
+        logging.error(
+            "Error while inserting user data into the database : %s", err)
         return return_json(404, "Error while inserting user data into the database : ")
     cursor.close()
     cnx.close()
@@ -137,7 +145,8 @@ def login():
     try:
         _json = request.json
     except Exception:
-        logging.error("/login: json parsing error data -> %s", str(request.args))
+        logging.error("/login: json parsing error data -> %s",
+                      str(request.args))
         return return_json(404, ("json parsing error data -> %s", str(request.args)))
     if not isinstance(_json, dict):
         logging.error("/login: json is not dictionary format")

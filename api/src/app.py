@@ -9,11 +9,12 @@ import logging
 import os
 import argparse
 import time
+from flask_cors import CORS
 from sys import stdout
 from datetime import timedelta, datetime
 from itertools import starmap
 from dotenv import load_dotenv
-from flask import Flask, request
+from flask import Flask, request, make_response
 from flask_jwt_extended import JWTManager
 
 
@@ -66,6 +67,7 @@ parser.add_argument("--init", action="store_true")
 
 
 app: Flask = Flask(__name__)
+cors = CORS(app)
 
 # Setup the Flask-JWT-Extended extension
 # default algorithm: HS256
@@ -74,6 +76,12 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=90)
 jwt = JWTManager(app)
 
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Headers", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
+    return response
 
 @app.before_request
 def before_req():
@@ -85,7 +93,8 @@ def before_req():
 
     to_log = "Start of Request - "
     to_log += "Road asked: " + str(request.path)
-
+    if request.method == "OPTIONS": # CORS preflight
+        return _build_cors_preflight_response()
     if not request:
         logging.error(to_log)
         return after_req(return_json(None))
