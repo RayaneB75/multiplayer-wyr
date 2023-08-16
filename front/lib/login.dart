@@ -23,13 +23,15 @@ class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      //crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: TextFormField(
             decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
+              border: OutlineInputBorder(),
               labelText: 'Enter your username',
             ),
           ),
@@ -38,7 +40,7 @@ class LoginForm extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: TextFormField(
             decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
+              border: OutlineInputBorder(),
               labelText: 'Enter your password',
             ),
           ),
