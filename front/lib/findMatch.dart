@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:frontend/wyr.dart';
 
 class FindMatchWindow extends StatelessWidget {
   const FindMatchWindow({super.key});
@@ -39,7 +40,10 @@ class FindMatchForm extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: ElevatedButton(
             onPressed: () {
-             
+             Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CardExampleApp()),
+                );
             },
             child: const Text('GO !'),
           ),
