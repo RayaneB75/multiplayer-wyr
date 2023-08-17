@@ -3,7 +3,7 @@ This module contains the healthcheck route
 """
 
 from flask import Flask
-from json_maker import return_json
+from Misc.json_maker import return_json
 from Database.connect import connect_db
 
 app = Flask(__name__)

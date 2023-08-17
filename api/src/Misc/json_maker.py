@@ -39,3 +39,19 @@ def return_json(code, data=None):
 
     # Return response created before
     return response
+
+
+def is_json(myjson):
+    """ Checks if the given string is a json
+
+    Args:
+        myjson (string): string to check
+
+    Returns:
+        bool: True if the string is a json, False otherwise
+    """
+    try:
+        json.loads(myjson)
+    except ValueError:
+        return False
+    return True

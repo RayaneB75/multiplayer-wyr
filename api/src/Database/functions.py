@@ -17,6 +17,7 @@ CREATE TABLE if not exists `Users` (
     `password` varchar(255) NOT NULL,
     `score` int NOT NULL,
     `user_id` int NOT NULL,
+    `in_game` varchar(100) NOT NULL,
     PRIMARY KEY (`email`),
     FOREIGN KEY (`email`) REFERENCES Ldap(`email`)   
 ) ENGINE=InnoDB;
