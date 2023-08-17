@@ -1,32 +1,60 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:universal_html/html.dart' as html;
+
 import 'package:flutter/material.dart';
 import 'package:frontend/api_calls.dart';
 import 'package:frontend/register.dart';
 import 'package:frontend/login.dart';
 
-void main() {
-  runApp( 
-    MaterialApp(
-      title: 'Tu préfère ? by ResEl',
-      home: const Home(),
-      theme: ThemeData.light(
-            useMaterial3: true,
-          ),
-    )
-  );
+void main() async {
+  runApp(const Main());
+
+  final splash = html.querySelector('#splash');
+  if (splash != null) {
+    await loadEnv();
+    splash.remove();
+  }
 }
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+Future<void> loadEnv() async {
+  await dotenv.load(fileName: ".env");
+}
 
+class Main extends StatelessWidget {
+  const Main({super.key});
+
+  // Check if the user is connected, if not,
+  // redirect to the login page
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Tu préfère ? by ResEl',
+      home: const MainPage(),
+      theme: ThemeData.light(
+        useMaterial3: true,
+      ),
+    );
+  }
+}
+
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    appBar: AppBar(
+      appBar: AppBar(
         title: Image.asset(
           'assets/logo_resel.png',
           fit: BoxFit.contain,
           height: 32,
-          
         ),
       ),
       body: Center(
@@ -45,7 +73,8 @@ class Home extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const RegisterWindow()),
+                  MaterialPageRoute(
+                      builder: (context) => const RegisterWindow()),
                 );
               },
             ),
@@ -63,11 +92,9 @@ class Home extends StatelessWidget {
             const ElevatedButton(
               onPressed: openSession,
               child: Text('OpenSession'),
-
             ),
           ],
         ),
-        
       ),
     );
   }
