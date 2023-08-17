@@ -5,8 +5,8 @@
     * Creation Date : 07/08/2023
 """
 import logging
+import json
 import mysql.connector as mysql
-from pandas import read_csv
 from mysql.connector import errorcode
 from Database.connect import connect_db
 
@@ -164,26 +164,30 @@ def load_db():
         if cnx is None:
             logging.error("db connection failed")
             return False
-        # with open(file="Database/mails.export", mode="r", encoding="utf-8") as ldap_file:
-        #     query = "SELECT email FROM Ldap"
-        #     if cursor.execute(query) != 0:
-        #         logging.debug("DB table already filled")
-        #         ldap_file.close()
-        #         return True
-        #     query = "INSERT INTO Ldap (email) VALUES (%s)"
-        #     cursor.executemany(query, [(line.strip(),) for line in ldap_file])
-        #     cnx.commit()
-        #     ldap_file.close()
-        with read_csv(filepath_or_buffer="Database/game.csv") as game_file:
-            new_dict = game_file.to_dict()
-            query = "SELECT email FROM Game"
-            if cursor.execute(query) != 0:
-                logging.debug("Game table already filled")
-                game_file.close()
-            query = "INSERT INTO Game (question_id, first_prop, second_prop) VALUES (%s, %s, %s)"
-            cursor.executemany(query, [(value[0], value[1], value[2])
-                               for value in new_dict.items()])
-            cnx.commit()
+        with open(file="Database/mails.export", mode="r", encoding="utf-8") as ldap_file:
+            cursor.execute("SELECT COUNT(*) FROM Ldap")
+            row_count = cursor.fetchone()[0]
+            if row_count == 0:
+                query = "INSERT INTO Ldap (email) VALUES (%s)"
+                cursor.executemany(query, [(line.strip(),) for line in ldap_file])
+                cnx.commit()
+            else:
+                logging.info("Ldap table already filled")
+            ldap_file.close()
+        with open(file="Database/game_set/wyr_en.json", mode="r", encoding="utf-8") as game_file:
+            new_dict = json.load(game_file)
+            cursor.execute("SELECT COUNT(*) FROM Game")
+            row_count = cursor.fetchone()[0]
+            if row_count == 0:
+                for idx, item in enumerate(new_dict, start=1):
+                    first_prop, second_prop = item
+                    cursor.execute('''
+                        INSERT INTO Game (question_id, first_prop, second_prop)
+                        VALUES (%s, %s, %s)
+                    ''', (idx, first_prop, second_prop))
+                cnx.commit()
+            else:
+                logging.info("Game table already filled")
             game_file.close()
     except mysql.Error as err:
         logging.error(
