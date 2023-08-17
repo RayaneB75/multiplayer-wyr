@@ -9,7 +9,12 @@ class FindMatchWindow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //title: const Text('Find Match !'),
+        title: Image.asset(
+          'assets/logo_resel.png',
+          fit: BoxFit.contain,
+          height: 32,
+          
+        ),
       ),
       body: const Center(
         child: FindMatchForm()
@@ -50,7 +55,7 @@ class FindMatchForm extends StatelessWidget {
             onPressed: () {
              Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CardExampleApp()),
+                  MaterialPageRoute(builder: (context) => const WyrWindow()),
                 );
             },
             child: const Text('GO !'),

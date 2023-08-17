@@ -7,7 +7,7 @@ void main() {
   runApp( MaterialApp(
     title: 'Would You Rather',
     home: const Home(),
-    theme: ThemeData.dark(
+    theme: ThemeData.light(
         useMaterial3: true,
         ),
   ));
@@ -19,8 +19,13 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        //title: const Text('Would you rather ...'),
+    appBar: AppBar(
+        title: Image.asset(
+          'assets/logo_resel.png',
+          fit: BoxFit.contain,
+          height: 32,
+          
+        ),
       ),
       body: Center(
         child: Column(

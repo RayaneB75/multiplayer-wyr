@@ -65,8 +65,12 @@ class _TestApiState extends State<TestApi> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Test API'),
+        title: Image.asset(
+          'assets/logo_resel.png',
+          fit: BoxFit.contain,
+          height: 32,
         ),
+      ),
         body: Container(
           alignment: Alignment.center,
           padding: const EdgeInsets.all(8),

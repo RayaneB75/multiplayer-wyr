@@ -9,7 +9,12 @@ class RegisterWindow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //title: const Text('Register'),
+        title: Image.asset(
+          'assets/logo_resel.png',
+          fit: BoxFit.contain,
+          height: 32,
+          
+        ),
       ),
       body: const Center(
         child: RegisterForm()

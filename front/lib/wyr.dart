@@ -1,40 +1,48 @@
 import 'package:flutter/material.dart';
 
-/// Flutter code sample for [Card].
-
-class CardExampleApp extends StatelessWidget {
-  const CardExampleApp({super.key});
+class WyrWindow extends StatelessWidget {
+  const WyrWindow({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: Text(
-              "Would you rather ?",
-              ),
-            ),
-            GestureDetector(
-              child: const Text('sample subtitle', style: TextStyle(fontSize: 13)),
-              onTap: () {
+      // appBar: AppBar(
+      //   title: Column(
+      //     mainAxisAlignment: MainAxisAlignment.center,
+      //     crossAxisAlignment: CrossAxisAlignment.center,
+      //     children: [
+      //       const Padding(
+      //         padding: EdgeInsets.only(top: 10),
+      //         child: Text(
+      //         "Would you rather ?",
+      //         ),
+      //       ),
+      //       GestureDetector(
+      //         child: const Text('sample subtitle', style: TextStyle(fontSize: 13)),
+      //         onTap: () {
                 
-              },
-            )
-          ]
+      //         },
+      //       )
+      //     ]
+      //   ),
+      // ),
+      appBar: AppBar(
+        title: Image.asset(
+          'assets/logo_resel.png',
+          fit: BoxFit.contain,
+          height: 32,
+          
         ),
       ),
       body: const Center(
-        child: CardExample()
+        child: Wyr()
       ),
     );
   }
 }
 
-class CardExample extends StatelessWidget {
-  const CardExample({super.key});
+class Wyr extends StatelessWidget {
+  const Wyr({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +55,7 @@ class CardExample extends StatelessWidget {
             buttonText: "Installer NeoVim",
           ),
           SizedBox(height: 50),
-          Text('OR', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+          Text('Would you rather ?', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
           SizedBox(height: 50),
           Choice(
             buttonText: "Installer Emacs",
