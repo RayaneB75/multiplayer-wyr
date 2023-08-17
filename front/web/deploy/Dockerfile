@@ -35,5 +35,9 @@ RUN rm /etc/nginx/conf.d/default.conf
 # Copy the built web app from the build stage
 COPY --from=build /app/build/web /usr/share/nginx/html
 
+RUN echo ${JWT_SECRET} >> /usr/share/nginx/html/.env
+RUN echo ${JWT_TOKEN} >> /usr/share/nginx/html/.env
+
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
