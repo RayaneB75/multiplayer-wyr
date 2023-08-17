@@ -5,7 +5,7 @@ import 'package:frontend/login.dart';
 
 void main() {
   runApp( MaterialApp(
-    title: 'Tu préfère by ResEl',
+    title: 'Tu préfère ? by ResEl',
     home: const Home(),
     theme: ThemeData.light(
         useMaterial3: true,

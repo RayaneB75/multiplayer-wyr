@@ -51,14 +51,21 @@ class FindMatchForm extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: ElevatedButton(
-            onPressed: () {
-             Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const WyrWindow()),
-                );
-            },
-            child: const Text('GO !'),
+          child: SizedBox(
+            height: 50,
+            width: 150,
+            child: ElevatedButton(
+              onPressed: () {
+               Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const WyrWindow()),
+                  );
+              },
+              child: const Text(
+                'Match !',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
           ),
         ),
         Padding(
