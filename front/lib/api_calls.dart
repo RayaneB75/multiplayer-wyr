@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-Future openSession() async {
+Future<String> openSession() async {
   final response = await http.post(
     Uri.parse('http://rayane.space:5000/openSession?JWT_SECRET_KEY=secret'),
     headers: <String, String>{
