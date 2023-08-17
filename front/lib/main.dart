@@ -56,7 +56,6 @@ class _MainPageState extends State<MainPage> {
           fit: BoxFit.contain,
           height: 32,
         ),
-        leading: Image.asset('assets/logo_resel.png'),
       ),
       body: Center(
         child: Column(
