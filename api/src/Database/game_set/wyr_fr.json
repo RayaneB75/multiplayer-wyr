@@ -521,7 +521,10 @@
     ],
     [
         "avoir le pouvoir de se téléporter n'importe où dans le monde mais ne jamais pouvoir rentrer chez lui",
-        "avoir le pouvoir de se téléporter vers votre emplacement d'origine mais ne jamais pouvoir voyager32. Préférez-vous avoir la capacité de communiquer avec les animaux mais ne jamais pouvoir parler avec les humains",
+        "avoir le pouvoir de se téléporter vers votre emplacement d'origine mais ne jamais pouvoir voyager"
+    ],
+    [
+        "avoir la capacité de communiquer avec les animaux mais ne jamais pouvoir parler avec les humains",
         "avoir la capacité de parler avec les humains mais jamais de comprendre les animaux"
     ],
     [
@@ -570,7 +573,9 @@
     ],
     [
         "avoir la capacité de comprendre et de parler n'importe quelle langue ancienne mais être incapable de comprendre",
-        "parler n'importe quelle langue moderne",
+        "parler n'importe quelle langue moderne"
+    ],
+    [
         "avoir la capacité de comprendre et de parler n'importe quelle langue moderne mais être incapable de comprendre",
         "parler n'importe quelle langue ancienne"
     ],
@@ -900,8 +905,7 @@
     ],
     [
         "ont la capacité de se téléporter mais finissent toujours dans un endroit aléatoire",
-        "avoir la capacité de voyager dans le temps mais jamais être en mesure de contrôler quand",
-        "où tu finis"
+        "avoir la capacité de voyager dans le temps mais jamais être en mesure de contrôler quand et où tu finis"
     ],
     [
         "avoir le pouvoir de contrôler les esprits",
@@ -1104,8 +1108,7 @@
         "avoir le pouvoir de contrôler et de manipuler la réalité mais être incapable de s'en réveiller"
     ],
     [
-        "être capable de parler et de comprendre n'importe quel langage humain mais être incapable de lire",
-        "écrire",
+        "être capable de parler et de comprendre n'importe quel langage humain mais être incapable de lire et écrire",
         "être capable de lire et d'écrire n'importe quelle langue mais être incapable de parler"
     ],
     [
@@ -1382,8 +1385,7 @@
     ],
     [
         "pouvoir communiquer avec les plantes",
-        "avoir le pouvoir de guérir n'importe quelle maladie",
-        "blessure"
+        "avoir le pouvoir de guérir n'importe quelle maladie ou blessure"
     ],
     [
         "avoir la capacité de voler comme un oiseau",

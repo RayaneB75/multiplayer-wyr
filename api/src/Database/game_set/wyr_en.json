@@ -521,7 +521,10 @@
     ],
     [
         "have the power to teleport anywhere in the world but never be able to return home",
-        "have the power to teleport back to your original location but never be able to travel32. Would you rather have the ability to communicate with animals but never be able to speak with humans",
+        "have the power to teleport back to your original location but never be able to travel"
+    ],
+    [
+        "have the ability to communicate with animals but never be able to speak with humans",
         "have the ability to speak with humans but never be able to understand animals"
     ],
     [
@@ -569,10 +572,8 @@
         "have the power to control and manipulate luck but be unable to control your own actions"
     ],
     [
-        "have the ability to understand and speak any ancient language but be unable to understand",
-        "speak any modern language",
-        "have the ability to understand and speak any modern language but be unable to understand",
-        "speak any ancient language"
+        "have the ability to understand and speak any ancient language but be unable to understand speak any modern language",
+        "have the ability to understand and speak any modern language but be unable to understand speak any ancient language"
     ],
     [
         "have the power to control and manipulate the elements (earth, air, fire, water) but be unable to control your own emotions",
@@ -900,8 +901,7 @@
     ],
     [
         "have the ability to teleport but always end up in a random location",
-        "have the ability to time travel but never be able to control when",
-        "where you end up"
+        "have the ability to time travel but never be able to control when and where you end up"
     ],
     [
         "have the power to control minds",
@@ -1104,8 +1104,7 @@
         "have the power to control and manipulate reality but be unable to wake up from it"
     ],
     [
-        "be able to speak and understand any human language but be unable to read",
-        "write",
+        "be able to speak and understand any human language but be unable to read and write",
         "be able to read and write any language but be unable to speak"
     ],
     [
@@ -1382,8 +1381,7 @@
     ],
     [
         "be able to communicate with plants",
-        "have the power to heal any illness",
-        "injury"
+        "have the power to heal any illness and injury"
     ],
     [
         "have the ability to fly like a bird",
