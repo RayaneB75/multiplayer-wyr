@@ -4,13 +4,15 @@ import 'package:frontend/register.dart';
 import 'package:frontend/login.dart';
 
 void main() {
-  runApp( MaterialApp(
-    title: 'Tu préfère ? by ResEl',
-    home: const Home(),
-    theme: ThemeData.light(
-        useMaterial3: true,
-        ),
-  ));
+  runApp( 
+    MaterialApp(
+      title: 'Tu préfère ? by ResEl',
+      home: const Home(),
+      theme: ThemeData.light(
+            useMaterial3: true,
+          ),
+    )
+  );
 }
 
 class Home extends StatelessWidget {
@@ -58,14 +60,10 @@ class Home extends StatelessWidget {
               },
             ),
             const SizedBox(height: 100),
-            ElevatedButton(
-              child: const Text('TEST API'),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const TestApi()),
-                );
-              },
+            const ElevatedButton(
+              onPressed: openSession,
+              child: Text('OpenSession'),
+
             ),
           ],
         ),
