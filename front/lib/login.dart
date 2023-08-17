@@ -35,14 +35,14 @@ class LoginForm extends StatelessWidget {
       children: <Widget>[
 
         const Text(
-          'Login',
+          'Se connecter',
           style: TextStyle(fontSize: 30),
         ),
 
         const SizedBox(height: 120),
 
-        const TextFieldCustom(content: "Enter your username"),
-        const TextFieldCustom(content: "Enter your password"),
+        const TextFieldCustom(content: "Entre ton e-mail IMT Atlantique"),
+        const TextFieldCustom(content: "Entre ton mot de passe"),
 
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -53,7 +53,7 @@ class LoginForm extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const FindMatchWindow()),
                 );
             },
-            child: const Text('Login'),
+            child: const Text('Connexion'),
           ),
         ),
       ],

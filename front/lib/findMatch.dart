@@ -34,7 +34,7 @@ class FindMatchForm extends StatelessWidget {
       children: <Widget>[
 
         const Text(
-          'Find Match !',
+          'Trouve un partenaire !',
           style: TextStyle(fontSize: 30),
         ),
 
@@ -45,7 +45,7 @@ class FindMatchForm extends StatelessWidget {
           child: TextFormField(
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
-              labelText: 'Enter player ID',
+              labelText: 'Entre l\'identifiant du joueur',
             ),
           ),
         ),
@@ -62,7 +62,7 @@ class FindMatchForm extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 75),
           child: ElevatedButton(
             onPressed: () {
                 showModalBottomSheet<void>(
@@ -87,7 +87,7 @@ class FindMatchForm extends StatelessWidget {
                 },
               );
             },
-            child: const Text('Show player ID'),
+            child: const Text('Mon identifiant'),
           ),
         ),
       ],

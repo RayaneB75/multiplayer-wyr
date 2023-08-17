@@ -34,15 +34,15 @@ class RegisterForm extends StatelessWidget {
       children: <Widget>[
 
         const Text(
-          'Register',
+          'S\'enregistrer',
           style: TextStyle(fontSize: 30),
         ),
 
         const SizedBox(height: 120),
 
-        const TextFieldCustom(content: "Enter your IMT Atlantique email"),
-        const TextFieldCustom(content: "Enter your password"),
-        const TextFieldCustom(content: "Confirm your password"),
+        const TextFieldCustom(content: "Entre ton e-mail IMT Atlantique"),
+        const TextFieldCustom(content: "Entre ton mot de passe"),
+        const TextFieldCustom(content: "Confirme ton mot de passe"),
 
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -53,7 +53,7 @@ class RegisterForm extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const FindMatchWindow()),
                 );
             },
-            child: const Text('Register'),
+            child: const Text('S\'enregistrer'),
           ),
         ),
       ],

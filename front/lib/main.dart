@@ -5,7 +5,7 @@ import 'package:frontend/login.dart';
 
 void main() {
   runApp( MaterialApp(
-    title: 'Would You Rather',
+    title: 'Tu préfère by ResEl',
     home: const Home(),
     theme: ThemeData.light(
         useMaterial3: true,
@@ -34,12 +34,12 @@ class Home extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text(
-              'Would you rather ...',
+              'Tu préfère ...',
               style: TextStyle(fontSize: 30),
             ),
             const SizedBox(height: 120),
             ElevatedButton(
-              child: const Text('Register'),
+              child: const Text('Enregistrement'),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -49,7 +49,7 @@ class Home extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              child: const Text('Login'),
+              child: const Text('Connexion'),
               onPressed: () {
                 Navigator.push(
                   context,
