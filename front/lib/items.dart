@@ -55,13 +55,6 @@ class _PasswordFieldCustomState extends State<PasswordFieldCustom> {
   // Initially password is obscure
   bool _obscureText = true;
 
-  // Toggles the password show status
-  void _toggle() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
       return Padding(
