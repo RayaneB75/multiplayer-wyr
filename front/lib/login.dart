@@ -31,37 +31,49 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
+
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      //crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
 
-        const Text(
-          'Se connecter',
-          style: TextStyle(fontSize: 30),
-        ),
+    TextFieldCustom email;
+    TextFieldCustom password;
 
-        const SizedBox(height: 120),
-
-        const TextFieldCustom(content: "Entre ton e-mail IMT Atlantique"),
-        const TextFieldCustom(content: "Entre ton mot de passe"),
-
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: ElevatedButton(
-            onPressed: () {
-             Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const FindMatchWindow()),
-                );
-            },
-            child: const Text('Connexion'),
+    return Form(
+      key: _formKey,
+      child: Column(
+        //crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+    
+          const Text(
+            'Se connecter',
+            style: TextStyle(fontSize: 30),
           ),
-        ),
-      ],
+    
+          const SizedBox(height: 120),
+    
+          email = const TextFieldCustom(content: "Entre ton e-mail IMT Atlantique"),
+          password = const TextFieldCustom(content: "Entre ton mot de passe"),
+    
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+            child: ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const FindMatchWindow()),
+                  );
+                }
+              },
+              child: const Text('Connexion'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

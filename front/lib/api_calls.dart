@@ -31,11 +31,25 @@ class ApiCalls {
 
 }
 
-static Future<String> login() async {
+static Future<String> login(String email, String password) async {
+  const String endpoint = "login";
 
+  final response = await http.post(
+      Uri.parse('$protocol://$domain:$port/$endpoint'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        "email": email,
+        "password": password,
+      }),
+    );
 
-
-  return "";
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to login');
+    }
 }
 
 }
