@@ -48,8 +48,8 @@ class _LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
-  Future login() async {
-    return await ApiCalls.login(emailController.text, passwordController.text);
+  Future login(String email, String password) async {
+    return await ApiCalls.login(email, password);
   }
 
   @override
@@ -92,12 +92,15 @@ class _LoginFormState extends State<LoginForm> {
 
                 if (isFrontValid) {
                   // call login api
-                  login();
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const FindMatchWindow()),
-                  );
+                  // ignore: unrelated_type_equality_checks
+                  if (login(emailController.text, passwordController.text) == 200) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const FindMatchWindow()),
+                    );
+                  } else {
+                    print(ApiCalls.getLastError());
+                  }
                 } 
               },
               child: const Text('Connexion'),
