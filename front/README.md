@@ -14,3 +14,14 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Init
+
+Ajouter les variables d'environnements suivantes dans un fichier .env à la racine du projet:
+
+```
+JWT_TOKEN=token
+API_SRV_HOSTNAME=api_inte
+API_SRV_PORT=80
+API_SRV_PROTOCOL=http
+```
