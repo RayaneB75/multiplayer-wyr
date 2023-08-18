@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 
 import 'package:frontend/misc.dart';
 import 'package:frontend/find_match.dart';
@@ -24,7 +23,7 @@ class ApiCalls {
   static Future openSession() async {
     const String endpoint = "openSession";
 
-    Response result = await http.post(
+    final result = await http.post(
       Uri.parse('$protocol://$domain:$port/$endpoint?JWT_SECRET_KEY=secret'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -35,10 +34,11 @@ class ApiCalls {
       }),
     );
     if (result.statusCode == 200) {
-      final String json = jsonDecode(result.body);
+      final json = jsonDecode(result.body);
 
       token = json['token'];
       refreshToken = json['refresh_token'];
+
     } else {
       throw Exception('Failed to open session');
     }
