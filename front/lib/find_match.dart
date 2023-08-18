@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/wyr.dart';
 import 'package:frontend/items.dart';
 
+import 'api_calls.dart';
+
 
 class FindMatchWindow extends StatefulWidget {
   final String token;
@@ -18,6 +20,18 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
   final _formKey = GlobalKey<FormState>();
 
   final idController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    idController.dispose();
+
+    super.dispose();
+  }
+
+  Future match(String userId, context) async {
+    return await ApiCalls.match(userId, context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +80,7 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
                             }
 
                             if (isFrontValid) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const WyrWindow()),
-                              );
+                              match(idController.text, context);
                             }
                           },
                           child: const Text(
