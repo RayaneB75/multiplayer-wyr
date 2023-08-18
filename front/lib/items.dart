@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 
+// email field
 class TextFieldCustom extends StatefulWidget {
 
     final String content;
@@ -22,10 +23,50 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
           validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'S\'il vous plait renseignez ce champ';
+              } else if (!value.endsWith("@imt-atlantique.net")) {
+                return 'E-mail invalide (prenom.nom@imt-atlantique.net)';
               }
               return null;
             },
           controller: widget.controller,
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            labelText: widget.content,
+          ),
+        ),
+      );
+  }
+}
+
+// password field
+class PasswordFieldCustom extends StatefulWidget {
+
+    final String content;
+    final TextEditingController controller;
+
+    const PasswordFieldCustom({Key? key, required this.content, required this.controller}) : super(key: key);
+
+  @override
+  State<PasswordFieldCustom> createState() => _PasswordFieldCustomState();
+}
+
+class _PasswordFieldCustomState extends State<PasswordFieldCustom> {
+
+  @override
+  Widget build(BuildContext context) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+        child: TextFormField(
+          validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'S\'il vous plait renseignez ce champ';
+              } else if (value.length < 8) {
+                return 'Le mot de passe est trop court';
+              }
+              return null;
+            },
+          controller: widget.controller,
+          obscureText: true,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             labelText: widget.content,

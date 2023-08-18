@@ -69,11 +69,11 @@ class _RegisterFormState extends State<RegisterForm> {
             controller: emailController,
             content: "Entre ton e-mail IMT Atlantique",
             ),
-          TextFieldCustom(
+          PasswordFieldCustom(
             controller: passwordController,
             content: "Entre ton mot de passe",
             ),
-          TextFieldCustom(
+          PasswordFieldCustom(
             controller: passwordCheckController,
             content: "Confirme ton mot de passe",
             ),

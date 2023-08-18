@@ -70,7 +70,7 @@ class _LoginFormState extends State<LoginForm> {
             content: "Entre ton e-mail IMT Atlantique",
             controller: emailController,
             ),
-          TextFieldCustom(
+          PasswordFieldCustom(
             content: "Entre ton mot de passe",
             controller: passwordController,
             ),
@@ -79,7 +79,13 @@ class _LoginFormState extends State<LoginForm> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: ElevatedButton(
               onPressed: () {
+                bool isEmpty = false;
+
                 if (_formKey.currentState!.validate()) {
+                  isEmpty = true;
+                }
+
+                if (isEmpty) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const FindMatchWindow()),
