@@ -56,7 +56,7 @@ def open_session():
         log = "/openSession: json parsing error data -> %s \n %s", str(
             request.args), err
         logging.error(log)
-        return (return_json(404, log))
+        return return_json(404, log)
     return return_json(404, "Passwords mismatch")
 
 # POST /register
@@ -131,7 +131,7 @@ def login():
     """
     Logs the user in
         * Return        : 200 OK if the user has been logged in successfully or
-        401 Unauthorized if the user is not registered
+        404 Not Found if the user is not registered
         * Param         : username, password
     """
     jwt_identity = get_jwt_identity()
@@ -147,13 +147,14 @@ def login():
     except Exception:
         logging.error("/login: json parsing error data -> %s",
                       str(request.args))
-        return return_json(404, ("json parsing error data -> %s", str(request.args)))
+        return return_json(404, ("json parsing error data -> " + str(request.args)))
     if not isinstance(_json, dict):
         logging.error("/login: json is not dictionary format")
         return return_json(404, "json is not dictionary format")
 
     email = _json.get("email", None)
     password = _json.get("password", None)
+    logging.info("%s trying to connnect", email)
 
     if email is None or password is None:
         return return_json(404, "Missing email or password.")
@@ -163,12 +164,12 @@ def login():
         return return_json(404, "User not registered.")
     valid_password = check_password(password, hashed_db_password)
 
-    logging.debug("email %s", str(email))
-
     if valid_password:
+        user_id = email_to_user_id(email)
         token = create_access_token(identity=email)
         refresh_token = create_refresh_token(identity=email)
-        return return_json(200, {"token": token, "refresh_token": refresh_token})
+        set_game_state(user_id, 0)
+        return return_json(200, {"token": token, "refresh_token": refresh_token, "user_id": user_id})
 
     logging.error("/login: Passwords mismatch")
     return return_json(404, "Wrong password.")
@@ -189,17 +190,17 @@ def get_db_password(email):
         result = None
         if email:
             cursor = cnx.cursor()
-            query = "SELECT password FROM Users WHERE email = %s"
-            val = (email,)
-            cursor.execute(query, val)
-            result = cursor.fetchone()[0]
-            cursor.close()
-
+            cursor.execute("SELECT email, password FROM Users")
+            for item in cursor:
+                if item[0] == email or str(item[0]) == email:
+                    result = item[1]
+                    cnx.close()
+                    return result
+        cnx.close()
+        return None
     except mysql.Error as err:
         logging.error("Error while getting password from DB : %s", err)
         return None
-    cnx.close()
-    return result
 
 
 def create_hashed_password(plain_text_password):
@@ -231,26 +232,55 @@ def is_user_in_db(iden, id_type, table):
         * Return        : True if the email is in the database, False otherwise
         * Param         : email
     """
-    cnx = connect_db()
-    if cnx is None:
-        logging.error("Cannot connect to DB")
-        return False
-    cursor = cnx.cursor()
-    if table == "Users":
-        if id_type == "email":
-            cursor.execute("SELECT email FROM Users")
-        elif id_type == "user_id":
-            cursor.execute("SELECT user_id FROM Users")
-    else:
-        cursor.execute("SELECT email FROM Ldap")
+    try:
+        cnx = connect_db()
+        if cnx is None:
+            logging.error("Cannot connect to DB")
+            return False
+        cursor = cnx.cursor()
+        if table == "Users":
+            if id_type == "email":
+                cursor.execute("SELECT email FROM Users")
+            elif id_type == "user_id":
+                cursor.execute("SELECT user_id FROM Users")
+        else:
+            cursor.execute("SELECT email FROM Ldap")
 
-    for item in cursor:
-        if item[0] == iden or str(item[0]) == iden:
-            cnx.close()
-            return True
-    cursor.close()
-    cnx.close()
-    return False
+        for item in cursor:
+            if item[0] == iden or str(item[0]) == iden:
+                cnx.close()
+                return True
+        cursor.close()
+        cnx.close()
+        return False
+    except mysql.Error as err:
+        logging.error("Error while checking if user is in DB : %s", err)
+        return False
+
+
+def is_user_in_game(user_id):
+    """	
+    Check if the user is in game
+        * Return        : True if the user is in game, False otherwise
+        * Param         : user_id
+    """
+    try:
+        cnx = connect_db()
+        if cnx is None:
+            logging.error("Cannot connect to DB")
+            return None
+        cursor = cnx.cursor()
+        cursor.execute("SELECT user_id, in_game FROM Users")
+        for item in cursor:
+            if item[0] == user_id or str(item[0]) == user_id:
+                result = item[1]
+                cnx.close()
+                return result
+        cnx.close()
+    except mysql.Error as err:
+        logging.error("Error while checking if user is in game : %s", err)
+        return None
+    return None
 
 
 def email_to_user_id(email):
@@ -267,13 +297,35 @@ def email_to_user_id(email):
 
         result = None
         cursor = cnx.cursor()
-        query = "SELECT user_id FROM Users WHERE email = %s"
-        val = (email,)
-        cursor.execute(query, val)
-        result = cursor.fetchone()[0]
-        cursor.close()
+        cursor.execute("SELECT email, user_id FROM Users")
+        for item in cursor:
+            if item[0] == email or str(item[0]) == email:
+                result = item[1]
+                cnx.close()
+                return result
         cnx.close()
         return result
     except mysql.Error as err:
         logging.error("Error while getting user_id from DB : %s", err)
         return None
+
+
+def set_game_state(user_id, state):
+    """
+    Changing user's game state in the database
+        * Return        : -
+        * Param         : user id and user's new game state
+    """
+    try:
+        cnx = connect_db()
+        if cnx is None:
+            logging.error("Cannot connect to DB")
+        cursor = cnx.cursor()
+        query = "UPDATE Users SET in_game = %s WHERE user_id = %s"
+        cursor.execute(query, (state, user_id,))
+
+        cnx.commit()
+        cnx.close()
+    except mysql.Error as err:
+        logging.error(
+            "Error while getting user data from the database : %s", err)

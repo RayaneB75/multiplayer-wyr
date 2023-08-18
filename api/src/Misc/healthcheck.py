@@ -3,8 +3,8 @@ This module contains the healthcheck route
 """
 
 from flask import Flask
-from Database.connect import connect_db
 from Misc.json_maker import return_json
+from Database.connect import connect_db
 
 app = Flask(__name__)
 
@@ -23,5 +23,5 @@ def healthcheck():
     if cnx is None:
         return ("Cannot connect to DB : ", 500)
     cnx.close()
-    
-    return "API and databases are healthy"
+
+    return return_json(200, "API and databases are healthy")
