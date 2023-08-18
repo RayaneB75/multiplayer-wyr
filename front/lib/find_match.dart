@@ -3,7 +3,7 @@ import 'package:frontend/wyr.dart';
 
 class FindMatchWindow extends StatelessWidget {
   final String token;
-  final String userId;
+  final int userId;
 
   const FindMatchWindow({super.key, required this.token, required this.userId});
 
@@ -75,7 +75,7 @@ class FindMatchWindow extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                Text(userId),
+                                Text('$userId'),
                                 // ElevatedButton(
                                 //   child: const Text('Close BottomSheet'),
                                 //   onPressed: () => Navigator.pop(context),
