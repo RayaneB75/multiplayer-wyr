@@ -258,7 +258,7 @@ def is_user_in_db(iden, id_type, table):
         return False
 
 
-def is_user_in_game(user_id):
+def is_user_in_game(user_id) -> bool:
     """	
     Check if the user is in game
         * Return        : True if the user is in game, False otherwise
@@ -266,6 +266,7 @@ def is_user_in_game(user_id):
     """
     try:
         cnx = connect_db()
+        result = False
         if cnx is None:
             logging.error("Cannot connect to DB")
             return None
@@ -273,14 +274,15 @@ def is_user_in_game(user_id):
         cursor.execute("SELECT user_id, in_game FROM Users")
         for item in cursor:
             if item[0] == user_id or str(item[0]) == user_id:
-                result = item[1]
+                if item[1] == '1':
+                    result = True
                 cnx.close()
                 return result
         cnx.close()
+        return result
     except mysql.Error as err:
         logging.error("Error while checking if user is in game : %s", err)
         return None
-    return None
 
 
 def email_to_user_id(email):
