@@ -51,7 +51,7 @@ class Wyr extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Text('Tu préfère ?', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+          Text('Tu préfères ?', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
           SizedBox(height: 120),
           Choice(
             buttonText: "Installer NeoVim",

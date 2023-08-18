@@ -31,7 +31,7 @@ class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tu préfère ? by ResEl',
+      title: 'Tu préfères ? by ResEl',
       home: const MainPage(),
       theme: ThemeData.light(
         useMaterial3: true,
