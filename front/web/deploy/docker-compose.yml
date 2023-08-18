@@ -9,8 +9,8 @@ services:
       - ./application_data/db:/var/lib/mysql
     env_file:
       - db.env
-    ports:
-      - 3306:3306
+    networks:
+      - nginx_int_net
 
   api:
     container_name: api_inte
@@ -18,18 +18,16 @@ services:
     restart: unless-stopped
     env_file:
       - api.env
-    ports:
-      - 5000:5000
     depends_on:
       db:
         condition: service_started
+    networks:
+      - nginx_int_net
 
   app:
     container_name: app_inte
     image: app_inte:latest
     restart: unless-stopped
-    ports:
-      - 80:80
     volumes:
       - ./rproxy.conf:/etc/nginx/conf.d/nginx.conf
     environment:
@@ -37,3 +35,9 @@ services:
     depends_on:
       api:
         condition: service_started
+    networks:
+      - nginx_int_net
+
+networks:
+  nginx_int_net:
+    external: true

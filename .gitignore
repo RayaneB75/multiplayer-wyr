@@ -6,6 +6,9 @@
 **/lib
 **/lib64
 
+# exclude front/lib
+!front/lib
+
 # Python
 **/__pycache__/
 **/logs/

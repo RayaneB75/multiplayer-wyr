@@ -36,7 +36,8 @@ from Database.functions import (
     create_db,
     delete_data,
     reset_db,
-    load_db
+    load_db,
+    load_fake_users
 )
 
 load_dotenv()
@@ -65,6 +66,7 @@ parser.add_argument("--create-db", action="store_true")
 parser.add_argument("--clear-db", action="store_true")
 parser.add_argument("--reset-db", action="store_true")
 parser.add_argument("--load-db", action="store_true")
+parser.add_argument("--load-fake-users", action="store_true")
 parser.add_argument("--init", action="store_true")
 
 
@@ -177,6 +179,9 @@ def main(*args, debug=False, run=False):
             if app_args.load_db:
                 logging.info("== Loading Database ==")
                 load_db()
+            if app_args.load_fake_users:
+                logging.info("== Loading Users with fake data ==")
+                load_fake_users()
             break
         print("== Connection failed ==", file=stdout)
         cpt -= 1
