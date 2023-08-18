@@ -20,7 +20,6 @@ samples, guidance on mobile development, and a full API reference.
 Ajouter les variables d'environnements suivantes dans un fichier .env à la racine du projet:
 
 ```
-JWT_SECRET=secret
 JWT_TOKEN=token
 API_SRV_HOSTNAME=api_inte
 API_SRV_PORT=80

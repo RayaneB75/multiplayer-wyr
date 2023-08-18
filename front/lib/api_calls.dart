@@ -4,10 +4,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
-import 'package:frontend/findMatch.dart';
+import 'package:frontend/misc.dart';
+import 'package:frontend/find_match.dart';
 
 class ApiCalls {
+  static String? jwtToken = dotenv.env['JWT_PASSWORD'];
   static String? protocol = dotenv.env['API_SRV_PROTOCOL'];
   static String? domain = dotenv.env['API_SRV_HOSTNAME'];
   static String? port = dotenv.env['API_SRV_PORT'];
@@ -21,25 +24,24 @@ class ApiCalls {
   static Future openSession() async {
     const String endpoint = "openSession";
 
-    await http.post(
+    Response result = await http.post(
       Uri.parse('$protocol://$domain:$port/$endpoint?JWT_SECRET_KEY=secret'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(<String, String>{
+      body: jsonEncode(<String, String?>{
         "name": "front",
-        "password": "thisIsFront",
+        "password": jwtToken,
       }),
-    ).then((result) => {
-      if (result.statusCode == 200) {
-      String json = jsonDecode(result.body),
+    );
+    if (result.statusCode == 200) {
+      final String json = jsonDecode(result.body);
 
-      token = json['token'],
-      refreshToken = json['refresh_token'],
+      token = json['token'];
+      refreshToken = json['refresh_token'];
     } else {
       throw Exception('Failed to open session');
     }
-    });
   }
 
 // login endpoint management
@@ -64,10 +66,11 @@ class ApiCalls {
               if (response.statusCode == 200)
                 {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const FindMatchWindow()),
-                  )
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            FindMatchWindow(token: getToken(response.body)),
+                      ))
                 }
               else
                 {

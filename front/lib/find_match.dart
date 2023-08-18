@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:frontend/wyr.dart';
 
 class FindMatchWindow extends StatelessWidget {
-  const FindMatchWindow({super.key});
+  final String? token;
+  const FindMatchWindow({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -13,12 +13,9 @@ class FindMatchWindow extends StatelessWidget {
           'assets/logo_resel.png',
           fit: BoxFit.contain,
           height: 32,
-          
         ),
       ),
-      body: const Center(
-        child: FindMatchForm()
-      ),
+      body: const Center(child: FindMatchForm()),
     );
   }
 }
@@ -32,14 +29,11 @@ class FindMatchForm extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-
         const Text(
           'Trouve un partenaire !',
           style: TextStyle(fontSize: 30),
         ),
-
         const SizedBox(height: 120),
-
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
           child: TextFormField(
@@ -56,10 +50,10 @@ class FindMatchForm extends StatelessWidget {
             width: 150,
             child: ElevatedButton(
               onPressed: () {
-               Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const WyrWindow()),
-                  );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const WyrWindow()),
+                );
               },
               child: const Text(
                 'Match !',
@@ -72,7 +66,7 @@ class FindMatchForm extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 75),
           child: ElevatedButton(
             onPressed: () {
-                showModalBottomSheet<void>(
+              showModalBottomSheet<void>(
                 context: context,
                 builder: (BuildContext context) {
                   return const SizedBox(
@@ -82,7 +76,7 @@ class FindMatchForm extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                        Text('Player ID'),
+                          Text('Player ID'),
                           // ElevatedButton(
                           //   child: const Text('Close BottomSheet'),
                           //   onPressed: () => Navigator.pop(context),
