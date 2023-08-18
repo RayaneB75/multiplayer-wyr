@@ -21,7 +21,7 @@ class ApiCalls {
   static Future openSession() async {
     const String endpoint = "openSession";
 
-    final response = await http.post(
+    await http.post(
       Uri.parse('$protocol://$domain:$port/$endpoint?JWT_SECRET_KEY=secret'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -30,16 +30,16 @@ class ApiCalls {
         "name": "front",
         "password": "thisIsFront",
       }),
-    );
+    ).then((result) => {
+      if (result.statusCode == 200) {
+      String json = jsonDecode(result.body),
 
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-
-      token = json['token'];
-      refreshToken = json['refresh_token'];
+      token = json['token'],
+      refreshToken = json['refresh_token'],
     } else {
       throw Exception('Failed to open session');
     }
+    });
   }
 
 // login endpoint management
