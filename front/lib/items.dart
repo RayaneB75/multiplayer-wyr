@@ -93,3 +93,41 @@ class _PasswordFieldCustomState extends State<PasswordFieldCustom> {
       );
   }
 }
+
+// email field
+class PlayerIDFieldCustom extends StatefulWidget {
+
+    final String content;
+    final TextEditingController controller;
+
+    const PlayerIDFieldCustom({Key? key, required this.content, required this.controller}) : super(key: key);
+
+  @override
+  State<PlayerIDFieldCustom> createState() => _PlayerIDFieldCustomState();
+}
+
+class _PlayerIDFieldCustomState extends State<PlayerIDFieldCustom> {
+
+  @override
+  Widget build(BuildContext context) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+        child: TextFormField(
+          validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'S\'il vous plait renseignez ce champ';
+              } else if (value.length != 6) {
+                return 'Identifiant invalide (6 chiffres requis)';
+              }
+              return null;
+            },
+          controller: widget.controller,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            labelText: widget.content,
+          ),
+        ),
+      );
+  }
+}

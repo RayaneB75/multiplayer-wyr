@@ -1,11 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/wyr.dart';
+import 'package:frontend/items.dart';
 
-class FindMatchWindow extends StatelessWidget {
+import 'api_calls.dart';
+
+
+class FindMatchWindow extends StatefulWidget {
   final String token;
   final int userId;
 
   const FindMatchWindow({super.key, required this.token, required this.userId});
+
+  @override
+  State<FindMatchWindow> createState() => _FindMatchWindowState();
+}
+
+class _FindMatchWindowState extends State<FindMatchWindow> {
+
+  final _formKey = GlobalKey<FormState>();
+
+  final idController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    idController.dispose();
+
+    super.dispose();
+  }
+
+  Future match(String userId, context) async {
+    return await ApiCalls.match(userId, context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +43,8 @@ class FindMatchWindow extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: Column(children: <Widget>[
+        child: Column(
+          children: <Widget>[
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -28,36 +54,43 @@ class FindMatchWindow extends StatelessWidget {
                 style: TextStyle(fontSize: 30),
               ),
               const SizedBox(height: 120),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Entre l\'identifiant du joueur',
-                  ),
-                ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                child: SizedBox(
-                  height: 50,
-                  width: 150,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const WyrWindow()),
-                      );
-                    },
-                    child: const Text(
-                      'Match !',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+                      child: PlayerIDFieldCustom(
+                        controller: idController,
+                        content: 'Entrez l\'ID du joueur',
+                      ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                      child: SizedBox(
+                        height: 50,
+                        width: 150,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            bool isFrontValid = false;
+
+                            if (_formKey.currentState!.validate()) {
+                              isFrontValid = true;
+                            }
+
+                            if (isFrontValid) {
+                              match(idController.text, context);
+                            }
+                          },
+                          child: const Text(
+                            'Match !',
+                            style:
+                                TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Padding(
@@ -76,7 +109,7 @@ class FindMatchWindow extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                Text('$userId', style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+                                Text('${widget.userId}', style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
                                 // ElevatedButton(
                                 //   child: const Text('Close BottomSheet'),
                                 //   onPressed: () => Navigator.pop(context),
