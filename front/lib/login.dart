@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/api_calls.dart';
 import 'package:frontend/findMatch.dart';
 import 'package:frontend/items.dart';
 
@@ -79,18 +80,21 @@ class _LoginFormState extends State<LoginForm> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: ElevatedButton(
               onPressed: () {
-                bool isEmpty = false;
+                bool isFrontValid = false;
 
                 if (_formKey.currentState!.validate()) {
-                  isEmpty = true;
+                  isFrontValid = true;
                 }
 
-                if (isEmpty) {
+                if (isFrontValid) {
+                  // call login api
+                  //print(ApiCalls.login(emailController.text, passwordController.text, token));
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const FindMatchWindow()),
                   );
-                }
+                } 
               },
               child: const Text('Connexion'),
             ),

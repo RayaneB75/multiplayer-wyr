@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/findMatch.dart';
 import 'package:frontend/items.dart';
 import 'package:frontend/login.dart';
 

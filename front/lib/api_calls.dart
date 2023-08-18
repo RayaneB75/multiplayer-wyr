@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ApiCalls {
@@ -31,13 +32,14 @@ class ApiCalls {
 
 }
 
-static Future<String> login(String email, String password) async {
+static Future login(String email, String password, String token) async {
   const String endpoint = "login";
 
   final response = await http.post(
       Uri.parse('$protocol://$domain:$port/$endpoint'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: "Bearer $token",
       },
       body: jsonEncode(<String, String>{
         "email": email,
