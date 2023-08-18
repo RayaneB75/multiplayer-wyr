@@ -41,40 +41,35 @@ class ApiCalls {
       throw Exception('Failed to open session');
     }
 
-}
+  }
 
 // login endpoint management
-static Future login(String email, String password) async {
-  const String endpoint = "login";
+  static Future login(String email, String password) async {
+    
+    const String endpoint = "login";
+    int result = 0;
 
-  final response = await http.post(
-      Uri.parse('$protocol://$domain:$port/$endpoint'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        HttpHeaders.authorizationHeader: "Bearer $token",
-      },
-      body: jsonEncode(<String, String>{
-        "email": email,
-        "password": password,
-      }),
-    );
+    await http.post(
+        Uri.parse('$protocol://$domain:$port/$endpoint'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: "Bearer $token",
+        },
+        body: jsonEncode(<String, String>{
+          "email": email,
+          "password": password,
+        }),
+      ).then((response) => {
+        if (response.statusCode == 200) {
+          result = 200;
+        } else {
+          //jsonDecode(response.body);
+          result = response.statusCode;
+        }
+      });
 
-    if (response.statusCode == 200) {
-      return 200;
-    } else {
-      setLastError(jsonDecode(response.body));
-      return 400;
-      //throw Exception(jsonDecode(response.body));
-    }
-}
-
-static String getLastError() {
-  return lastError;
-}
-
-static void setLastError(String err) {
-  lastError = err;
-}
+    return result;
+  }
 
 }
 
