@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 class ApiCalls {
 
-  static const String protocol = "https";
+  static const String protocol = dotenv.env['API_SRV_PROTOCOL'];
   static String? domain = dotenv.env['API_SRV_HOSTNAME'];
   static String? port = dotenv.env['API_SRV_PORT'];
 
