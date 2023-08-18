@@ -7,7 +7,6 @@
 import os
 import logging
 import random
-import bcrypt
 import mysql.connector as mysql
 from flask import request
 from flask_jwt_extended import (
@@ -18,6 +17,14 @@ from flask_jwt_extended import (
 )
 from Database.connect import connect_db
 from Misc.json_maker import return_json
+from Misc.user_logic import (
+    is_user_in_db,
+    email_to_user_id,
+    set_game_state,
+    get_db_password,
+    create_hashed_password,
+    check_password,
+)
 
 
 def open_session():
@@ -161,7 +168,7 @@ def login():
 
     hashed_db_password = get_db_password(email)
     if hashed_db_password is None:
-        return return_json(404, "User not registered.")
+        return return_json(404, "Vous n'êtes pas inscrit.")
     valid_password = check_password(password, hashed_db_password)
 
     if valid_password:
@@ -173,161 +180,3 @@ def login():
 
     logging.error("/login: Passwords mismatch")
     return return_json(404, "Wrong password.")
-
-
-def get_db_password(email):
-    """
-    Get the password of user in the database
-        * Return        : Password of the service
-        * Param         : name_service
-    """
-    try:
-        cnx = connect_db()
-        if cnx is None:
-            logging.error("Cannot connect to DB")
-            return None
-
-        result = None
-        if email:
-            cursor = cnx.cursor()
-            cursor.execute("SELECT email, password FROM Users")
-            for item in cursor:
-                if item[0] == email or str(item[0]) == email:
-                    result = item[1]
-                    cnx.close()
-                    return result
-        cnx.close()
-        return None
-    except mysql.Error as err:
-        logging.error("Error while getting password from DB : %s", err)
-        return None
-
-
-def create_hashed_password(plain_text_password):
-    """
-    Hash a password for the first time
-    (Using bcrypt, the salt is saved into the hash itself)
-    * Return        : Hashed password
-    * Param         : plain_text_password
-    """
-    return bcrypt.hashpw(plain_text_password.encode("utf-8"), bcrypt.gensalt())
-
-
-def check_password(plain_text_password, hashed_password):
-    """
-    Check hashed password. Using bcrypt, the salt is saved into the hash itself
-    * Return        : True if the password is correct, False otherwise
-    * Param         : plain_text_password, hashed_password
-    """
-    if hashed_password is None:
-        return False
-    if not isinstance(hashed_password, str):
-        raise TypeError("hashed_password must be a string")
-    return bcrypt.checkpw(plain_text_password.encode("utf-8"), hashed_password.encode("utf-8"))
-
-
-def is_user_in_db(iden, id_type, table):
-    """
-    Check if the email is already in the database
-        * Return        : True if the email is in the database, False otherwise
-        * Param         : email
-    """
-    try:
-        cnx = connect_db()
-        if cnx is None:
-            logging.error("Cannot connect to DB")
-            return False
-        cursor = cnx.cursor()
-        if table == "Users":
-            if id_type == "email":
-                cursor.execute("SELECT email FROM Users")
-            elif id_type == "user_id":
-                cursor.execute("SELECT user_id FROM Users")
-        else:
-            cursor.execute("SELECT email FROM Ldap")
-
-        for item in cursor:
-            if item[0] == iden or str(item[0]) == iden:
-                cnx.close()
-                return True
-        cursor.close()
-        cnx.close()
-        return False
-    except mysql.Error as err:
-        logging.error("Error while checking if user is in DB : %s", err)
-        return False
-
-
-def is_user_in_game(user_id) -> bool:
-    """	
-    Check if the user is in game
-        * Return        : True if the user is in game, False otherwise
-        * Param         : user_id
-    """
-    try:
-        cnx = connect_db()
-        result = False
-        if cnx is None:
-            logging.error("Cannot connect to DB")
-            return None
-        cursor = cnx.cursor()
-        cursor.execute("SELECT user_id, in_game FROM Users")
-        for item in cursor:
-            if item[0] == user_id or str(item[0]) == user_id:
-                if item[1] == '1':
-                    result = True
-                cnx.close()
-                return result
-        cnx.close()
-        return result
-    except mysql.Error as err:
-        logging.error("Error while checking if user is in game : %s", err)
-        return None
-
-
-def email_to_user_id(email):
-    """
-    Get the user_id of user in the database
-        * Return        : user_id of the user
-        * Param         : email
-    """
-    try:
-        cnx = connect_db()
-        if cnx is None:
-            logging.error("Cannot connect to DB")
-            return None
-
-        result = None
-        cursor = cnx.cursor()
-        cursor.execute("SELECT email, user_id FROM Users")
-        for item in cursor:
-            if item[0] == email or str(item[0]) == email:
-                result = item[1]
-                cnx.close()
-                return result
-        cnx.close()
-        return result
-    except mysql.Error as err:
-        logging.error("Error while getting user_id from DB : %s", err)
-        return None
-
-
-def set_game_state(user_id, state):
-    """
-    Changing user's game state in the database
-        * Return        : -
-        * Param         : user id and user's new game state
-    """
-    try:
-        cnx = connect_db()
-        if cnx is None:
-            logging.error("Cannot connect to DB")
-        cursor = cnx.cursor()
-        query = "UPDATE Users SET in_game = %s WHERE user_id = %s"
-        cursor.execute(query, (state, user_id,))
-
-        cnx.commit()
-        cnx.close()
-    except mysql.Error as err:
-        logging.error(
-            "Error while getting user data from the database : %s", err)
