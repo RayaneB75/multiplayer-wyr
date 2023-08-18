@@ -21,5 +21,8 @@ Ajouter les variables d'environnements suivantes dans un fichier .env à la raci
 
 ```
 JWT_SECRET=secret
-JWT_TOKEN==GDSDFG7lkgfFGSDb1te87FG6ldjghs9f7g7896 
+JWT_TOKEN=token
+API_SRV_HOSTNAME=api_inte
+API_SRV_PORT=80
+API_SRV_PROTOCOL=http
 ```
