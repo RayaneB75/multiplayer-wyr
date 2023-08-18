@@ -63,6 +63,11 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
                           horizontal: 30, vertical: 16),
                       child: PlayerIDFieldCustom(
                         controller: idController,
+                        onChanged: (value) {
+                          setState(() {
+                            _isButtonDisabled = false;
+                          });
+                        },
                         content: 'Entrez l\'ID du joueur',
                       ),
                     ),
