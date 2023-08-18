@@ -4,23 +4,15 @@ import 'package:flutter/material.dart';
 class TextFieldCustom extends StatefulWidget {
 
     final String content;
+    final TextEditingController controller;
 
-    const TextFieldCustom({Key? key, required this.content}) : super(key: key);
+    const TextFieldCustom({Key? key, required this.content, required this.controller}) : super(key: key);
 
   @override
   State<TextFieldCustom> createState() => _TextFieldCustomState();
 }
 
 class _TextFieldCustomState extends State<TextFieldCustom> {
-
-  final myController = TextEditingController();
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    myController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +25,7 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
               }
               return null;
             },
-          controller: myController,
+          controller: widget.controller,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             labelText: widget.content,

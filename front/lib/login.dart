@@ -34,11 +34,22 @@ class _LoginFormState extends State<LoginForm> {
 
   final _formKey = GlobalKey<FormState>();
 
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    emailController.dispose();
+    passwordController.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
 
-    TextFieldCustom email;
-    TextFieldCustom password;
 
     return Form(
       key: _formKey,
@@ -55,8 +66,14 @@ class _LoginFormState extends State<LoginForm> {
     
           const SizedBox(height: 120),
     
-          email = const TextFieldCustom(content: "Entre ton e-mail IMT Atlantique"),
-          password = const TextFieldCustom(content: "Entre ton mot de passe"),
+          TextFieldCustom(
+            content: "Entre ton e-mail IMT Atlantique",
+            controller: emailController,
+            ),
+          TextFieldCustom(
+            content: "Entre ton mot de passe",
+            controller: passwordController,
+            ),
     
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
