@@ -13,6 +13,8 @@ class ApiCalls {
   static String token = "";
   static String refreshToken= "";
 
+  static String lastError ="";
+
   // opensession endpoint management
   static Future openSession() async {
     const String endpoint = "openSession";
@@ -56,11 +58,17 @@ static Future login(String email, String password) async {
       }),
     );
 
+
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return 200;
     } else {
-      throw Exception('Failed to login');
+      lastError = jsonDecode(response.body);
+      throw Exception(jsonDecode(response.body));
     }
+}
+
+static String getLastError() {
+  return lastError;
 }
 
 }
