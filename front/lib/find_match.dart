@@ -32,7 +32,7 @@ class FindMatchWindow extends StatelessWidget {
 class FindMatchForm extends StatefulWidget {
   final int userId;
 
-  const FindMatchForm({super.key, required this.userId});
+  const FindMatchForm({Key? key, required this.userId}) : super(key: key);
 
   @override
   State<FindMatchForm> createState() => _FindMatchFormState();
