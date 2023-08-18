@@ -1,5 +1,4 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart';
 import 'package:universal_html/html.dart' as html;
 
 import 'package:flutter/material.dart';
@@ -19,6 +18,7 @@ void main() async {
 
 Future<void> loadEnv() async {
   await dotenv.load(fileName: ".env");
+  await ApiCalls.openSession();
 }
 
 class Main extends StatelessWidget {
@@ -89,11 +89,6 @@ class _MainPageState extends State<MainPage> {
                   MaterialPageRoute(builder: (context) => const LoginWindow()),
                 );
               },
-            ),
-            const SizedBox(height: 100),
-            const ElevatedButton(
-              onPressed: openSession,
-              child: Text('OpenSession'),
             ),
           ],
         ),

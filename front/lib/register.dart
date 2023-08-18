@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/findMatch.dart';
 import 'package:frontend/items.dart';
+import 'package:frontend/login.dart';
 
 class RegisterWindow extends StatelessWidget {
   const RegisterWindow({super.key});
@@ -50,7 +51,7 @@ class RegisterForm extends StatelessWidget {
             onPressed: () {
              Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const FindMatchWindow()),
+                  MaterialPageRoute(builder: (context) => const LoginWindow()),
                 );
             },
             child: const Text('S\'enregistrer'),
