@@ -76,7 +76,7 @@ cors = CORS(app)
 # Setup the Flask-JWT-Extended extension
 # default algorithm: HS256
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=6)
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=90)
 jwt = JWTManager(app)
 

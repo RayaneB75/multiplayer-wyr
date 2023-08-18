@@ -8,13 +8,19 @@
 import logging
 import random
 import mysql.connector.errors as mysql_errors
-from flask import Flask, request
+from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from Database.connect import connect_db
-from user import is_user_in_db, email_to_user_id, is_user_in_game, set_game_state
+from Misc.user_logic import (
+    is_user_in_db,
+    email_to_user_id,
+    set_game_state,
+    is_user_in_game,
+    is_user_available,
+    get_user_score,
+    add_new_duel
+)
 from Misc.json_maker import return_json
-
-app = Flask(__name__)
 
 
 @jwt_required()
@@ -48,14 +54,8 @@ def match():
             return return_json(404, "Vous ne pouvez pas jouer avec vous même")
         if user_r is None or not is_user_in_db(user_r, "user_id", "Users"):
             return return_json(404, "Cet utilisateur n'existe pas")
-        check_i = is_user_in_game(user_i)
-        check_r = is_user_in_game(user_r)
-        logging.debug("check_i : %s", check_i)
-        logging.debug("check_r : %s", check_r)
-        if check_i is None or check_r is None:
-            return return_json(404, "Un problème est survenu lors de la création de la partie")
-        if check_i or check_r:
-            return return_json(404, "Vous êtes déjà en partie")
+        logging.debug("is duel possible: %s",
+                      is_user_available(user_i, user_r))
         if not is_user_available(user_i, user_r):
             return return_json(404, "Vous avez déjà joué avec cet utilisateur")
         # All the checks are done, we can add the match to the database
@@ -65,7 +65,7 @@ def match():
         logging.error(
             ("/match: json parsing error data -> %s \n %s", str(request.args), err))
         return return_json(404, "Un problème est survenu lors de la création de la partie")
-    return return_json(200, "Match")
+    return return_json(200, {"dueled_user": user_r})
 
 
 @jwt_required()
@@ -77,11 +77,13 @@ def pull():
         404 Not Found (multiple reasons)
         * Param         : -
     """
-    user_email = get_jwt_identity()
-    if not is_user_in_db(user_email, "email", "Users"):
+    user_i_email = get_jwt_identity()
+    if not is_user_in_db(user_i_email, "email", "Users"):
         return return_json(404, "Vous n'êtes pas connecté")
+    if not is_user_in_game(email_to_user_id(user_i_email)):
+        return return_json(404, "Vous n'avez pas de partie en cours")
 
-    question_number = random.randint(0, 389)
+    question_number = random.randint(1, 389)
 
     try:
         cnx = connect_db()
@@ -89,19 +91,15 @@ def pull():
             logging.error("Cannot connect to DB")
             return return_json(404, "Cannot connect to DB")
         cursor = cnx.cursor()
-        query = "SELECT firstProp, secondProp FROM Game WHERE question_id = '%s'"
-        cursor.execute(query, (question_number,))
-        if cursor.rowcount == 0:
-            logging.error("No question found")
-            return return_json(404, "No question found")
-        question = cursor.fetchone()
-        cursor.close()
-        cnx.close()
+        cursor.execute("SELECT question_id, first_prop, second_prop FROM Game")
+        for item in cursor:
+            if item[0] == question_number or str(item[0]) == question_number:
+                cnx.close()
+                return return_json(200, {"first_prop": item[1], "second_prop": item[2]})
     except mysql_errors.Error as err:
         logging.error(
             "Error while getting user data from the database : %s", err)
         return return_json(404, "Error while getting user data from the database")
-    return return_json(200, {"firstProp": question[0], "secondProp": question[1]})
 
 
 @jwt_required()
@@ -111,38 +109,47 @@ def push():
     Pushes the answers to the server
         * Return        : 200 OK if the answers have been pushed successfully or
         404 Not Found (multiple reasons)
-        * Param         : answers
+        * Param         : user_id of the user who answered
     """
     user_i_email = get_jwt_identity()
+    user_i = email_to_user_id(user_i_email)
     if not is_user_in_db(user_i_email, "email", "Users"):
         return return_json(404, "Vous n'êtes pas connecté")
 
-    return "Push"
+    if not is_user_in_game(email_to_user_id(user_i_email)):
+        return return_json(404, "Vous n'avez pas de partie en cours")
 
+    if not request.is_json or not isinstance(request.json, dict):
+        logging.error(
+            "/match: no data passed to function or json is not dictionnary format")
+        return return_json(404, "no data passed to function json is not dictionnary format")
 
-def is_user_available(user_i, user_r):
-    """
-    Check if the user is available to play
-        * Return        : True if the user is available, False otherwise
-        * Param         : user
-    """
+    _json = request.json
+
     try:
+        user_r = str(_json.get("userId", None))
         cnx = connect_db()
         if cnx is None:
             logging.error("Cannot connect to DB")
-            return None
+            return return_json(404, "Cannot connect to DB")
+
         cursor = cnx.cursor()
-        query = "SELECT user_r FROM Matches WHERE user_i = %s"
-        cursor.execute(query, (user_i,))
-        if cursor.rowcount == 0:
-            return True
-        for each_user in cursor:
-            if each_user[0] != user_r:
-                return False
-        cursor.close()
-        cnx.close()
-        return True
-    except mysql_errors.Error as err:
+        new_score = 0
+        for user in [user_i, user_r]:
+            if user == user_i:
+                new_score = get_user_score(user) + 3
+            else:
+                new_score = get_user_score(user) + 1
+            cursor.execute(
+                "UPDATE Users SET score = %s WHERE user_id = %s", (new_score, user,))
+        cnx.commit()
+        set_game_state(user_i, 0)
+        set_game_state(user_i, 0)
+        add_new_duel(user_i, user_r)
+
+    except Exception as err:
         logging.error(
-            "Error while getting user data from the database : %s", err)
-        return None
+            ("/match: json parsing error data -> %s \n %s", str(request.args), err))
+        return return_json(404, "Un problème est survenu lors de la création de la partie")
+
+    return return_json(200, {"my_user_id": user_i})
