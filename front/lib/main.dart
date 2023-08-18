@@ -66,7 +66,7 @@ class _MainPageState extends State<MainPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text(
-              'Tu préfère ...',
+              'Tu préfères ...',
               style: TextStyle(fontSize: 30),
             ),
             const SizedBox(height: 120),
