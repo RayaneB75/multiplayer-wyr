@@ -33,6 +33,7 @@ class ApiCalls {
     if (response.statusCode == 200) {
 
       final json = jsonDecode(response.body);
+
       token = json['token'];
       refreshToken = json['refresh_token'];
 
@@ -58,17 +59,21 @@ static Future login(String email, String password) async {
       }),
     );
 
-
     if (response.statusCode == 200) {
       return 200;
     } else {
-      lastError = jsonDecode(response.body);
-      throw Exception(jsonDecode(response.body));
+      setLastError(jsonDecode(response.body));
+      return 400;
+      //throw Exception(jsonDecode(response.body));
     }
 }
 
 static String getLastError() {
   return lastError;
+}
+
+static void setLastError(String err) {
+  lastError = err;
 }
 
 }

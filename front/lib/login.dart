@@ -99,7 +99,19 @@ class _LoginFormState extends State<LoginForm> {
                       MaterialPageRoute(builder: (context) => const FindMatchWindow()),
                     );
                   } else {
-                    print(ApiCalls.getLastError());
+                    showDialog<String> (
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: const Text('Error'),
+                        content: Text(ApiCalls.lastError),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, 'OK'),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
                   }
                 } 
               },
