@@ -12,7 +12,7 @@ from flask import Flask, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from Database.connect import connect_db
 from user import is_user_in_db, email_to_user_id, is_user_in_game, set_game_state
-from Misc.json_maker import return_json, is_json
+from Misc.json_maker import return_json
 
 app = Flask(__name__)
 
@@ -54,7 +54,7 @@ def match():
         logging.debug("check_r : %s", check_r)
         if check_i is None or check_r is None:
             return return_json(404, "Un problème est survenu lors de la création de la partie")
-        if check_i == 1 or check_r == 1:
+        if check_i or check_r:
             return return_json(404, "Vous êtes déjà en partie")
         if not is_user_available(user_i, user_r):
             return return_json(404, "Vous avez déjà joué avec cet utilisateur")
