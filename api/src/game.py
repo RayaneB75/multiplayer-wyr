@@ -50,8 +50,6 @@ def match():
             return return_json(404, "Cet utilisateur n'existe pas")
         check_i = is_user_in_game(user_i)
         check_r = is_user_in_game(user_r)
-        logging.debug("check_i : %s", check_i)
-        logging.debug("check_r : %s", check_r)
         if check_i is None or check_r is None:
             return return_json(404, "Un problème est survenu lors de la création de la partie")
         if check_i or check_r:
@@ -77,11 +75,11 @@ def pull():
         404 Not Found (multiple reasons)
         * Param         : -
     """
-    user_email = get_jwt_identity()
-    if not is_user_in_db(user_email, "email", "Users"):
+    user_i_email = get_jwt_identity()
+    if not is_user_in_db(user_i_email, "email", "Users"):
         return return_json(404, "Vous n'êtes pas connecté")
 
-    question_number = random.randint(0, 389)
+    question_number = random.randint(1, 389)
 
     try:
         cnx = connect_db()
@@ -89,7 +87,8 @@ def pull():
             logging.error("Cannot connect to DB")
             return return_json(404, "Cannot connect to DB")
         cursor = cnx.cursor()
-        query = "SELECT firstProp, secondProp FROM Game WHERE question_id = '%s'"
+        query = "SELECT first_prop, second_prop FROM Game"
+
         cursor.execute(query, (question_number,))
         if cursor.rowcount == 0:
             logging.error("No question found")
@@ -101,7 +100,7 @@ def pull():
         logging.error(
             "Error while getting user data from the database : %s", err)
         return return_json(404, "Error while getting user data from the database")
-    return return_json(200, {"firstProp": question[0], "secondProp": question[1]})
+    return return_json(200, {"first_prop": question[0], "second_prop": question[1]})
 
 
 @jwt_required()
