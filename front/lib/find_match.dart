@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/wyr.dart';
 import 'package:frontend/items.dart';
 
 import 'api_calls.dart';
