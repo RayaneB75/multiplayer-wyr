@@ -25,7 +25,7 @@ class ApiCalls {
     const String endpoint = "openSession";
 
     final result = await http.post(
-      Uri.parse('$protocol://$domain:$port/$endpoint?JWT_SECRET_KEY=secret'),
+      Uri.parse('$protocol://$domain:$port/$endpoint'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -39,7 +39,6 @@ class ApiCalls {
 
       token = json['token'];
       refreshToken = json['refresh_token'];
-
     } else {
       throw Exception('Failed to open session');
     }
@@ -69,11 +68,11 @@ class ApiCalls {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            FindMatchWindow(
-                              token: loginToken = (jsonDecode(response.body))['token'],
-                              userId: (jsonDecode(response.body))['user_id'],
-                              ),
+                        builder: (context) => FindMatchWindow(
+                          token: loginToken =
+                              (jsonDecode(response.body))['token'],
+                          userId: (jsonDecode(response.body))['user_id'],
+                        ),
                       ))
                 }
               else
@@ -102,7 +101,8 @@ class ApiCalls {
     const String endpoint = "match";
     int result = 0;
 
-    await http.post(
+    await http
+        .post(
           Uri.parse('$protocol://$domain:$port/$endpoint'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
@@ -118,11 +118,11 @@ class ApiCalls {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            const WyrWindow( // remove const to pass userId
-                              // token: (jsonDecode(response.body))['token'],
-                              // userId: (jsonDecode(response.body))['user_id'],
-                              ),
+                        builder: (context) => const WyrWindow(
+                            // remove const to pass userId
+                            // token: (jsonDecode(response.body))['token'],
+                            // userId: (jsonDecode(response.body))['user_id'],
+                            ),
                       ))
                 }
               else
