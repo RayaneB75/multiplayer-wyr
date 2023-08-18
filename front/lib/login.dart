@@ -48,6 +48,10 @@ class _LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
+  Future login() async {
+    return await ApiCalls.login(emailController.text, passwordController.text);
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -88,7 +92,7 @@ class _LoginFormState extends State<LoginForm> {
 
                 if (isFrontValid) {
                   // call login api
-                  //print(ApiCalls.login(emailController.text, passwordController.text, token));
+                  login();
 
                   Navigator.push(
                     context,

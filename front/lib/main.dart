@@ -12,13 +12,13 @@ void main() async {
   final splash = html.querySelector('#splash');
   if (splash != null) {
     await loadEnv();
+    await ApiCalls.openSession();
     splash.remove();
   }
 }
 
 Future<void> loadEnv() async {
   await dotenv.load(fileName: ".env");
-  await ApiCalls.openSession();
 }
 
 class Main extends StatelessWidget {

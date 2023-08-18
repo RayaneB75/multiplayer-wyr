@@ -1,15 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class ApiCalls {
 
-  static const String protocol = "http";
-  static const String domain = "rayane.space";
-  static const String port = "5000";
+  static const String protocol = "https";
+  static String? domain = dotenv.env['API_SRV_HOSTNAME'];
+  static String? port = dotenv.env['API_SRV_PORT'];
 
-  static Future<String> openSession() async {
+  static String token = "";
+  static String refreshToken= "";
+
+  // opensession endpoint management
+  static Future openSession() async {
     const String endpoint = "openSession";
 
     final response = await http.post(
@@ -24,15 +29,19 @@ class ApiCalls {
     );
 
     if (response.statusCode == 200) {
+
       final json = jsonDecode(response.body);
-      return json['token'];
+      token = json['token'];
+      refreshToken = json['refresh_token'];
+
     } else {
       throw Exception('Failed to open session');
     }
 
 }
 
-static Future login(String email, String password, String token) async {
+// login endpoint management
+static Future login(String email, String password) async {
   const String endpoint = "login";
 
   final response = await http.post(
