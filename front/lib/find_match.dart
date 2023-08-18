@@ -3,7 +3,6 @@ import 'package:frontend/items.dart';
 
 import 'api_calls.dart';
 
-
 class FindMatchWindow extends StatefulWidget {
   final String token;
   final int userId;
@@ -15,9 +14,8 @@ class FindMatchWindow extends StatefulWidget {
 }
 
 class _FindMatchWindowState extends State<FindMatchWindow> {
-
   final _formKey = GlobalKey<FormState>();
-
+  bool _isButtonDisabled = false;
   final idController = TextEditingController();
 
   @override
@@ -29,6 +27,9 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
   }
 
   Future match(String userId, context) async {
+    setState(() {
+      _isButtonDisabled = true;
+    });
     return await ApiCalls.match(userId, context);
   }
 
@@ -43,8 +44,7 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
         ),
       ),
       body: Center(
-        child: Column(
-          children: <Widget>[
+        child: Column(children: <Widget>[
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -59,33 +59,37 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 16),
                       child: PlayerIDFieldCustom(
                         controller: idController,
                         content: 'Entrez l\'ID du joueur',
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 16),
                       child: SizedBox(
                         height: 50,
                         width: 150,
                         child: ElevatedButton(
-                          onPressed: () {
-                            bool isFrontValid = false;
+                          onPressed: _isButtonDisabled
+                              ? null
+                              : () {
+                                  bool isFrontValid = false;
 
-                            if (_formKey.currentState!.validate()) {
-                              isFrontValid = true;
-                            }
+                                  if (_formKey.currentState!.validate()) {
+                                    isFrontValid = true;
+                                  }
 
-                            if (isFrontValid) {
-                              match(idController.text, context);
-                            }
-                          },
+                                  if (isFrontValid) {
+                                    match(idController.text, context);
+                                  }
+                                },
                           child: const Text(
                             'Match !',
-                            style:
-                                TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
@@ -109,7 +113,10 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                Text('${widget.userId}', style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+                                Text('${widget.userId}',
+                                    style: const TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold)),
                                 // ElevatedButton(
                                 //   child: const Text('Close BottomSheet'),
                                 //   onPressed: () => Navigator.pop(context),
