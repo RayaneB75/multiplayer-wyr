@@ -10,4 +10,4 @@ if __name__ == "__main__":
     log = logging.getLogger("werkzeug")
     log.disabled = True
 
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")

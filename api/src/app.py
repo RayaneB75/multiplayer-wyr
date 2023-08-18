@@ -9,10 +9,10 @@ import logging
 import os
 import argparse
 import time
-from flask_cors import CORS
 from sys import stdout
 from datetime import timedelta, datetime
 from itertools import starmap
+from flask_cors import CORS
 from dotenv import load_dotenv
 from flask import Flask, request, make_response
 from flask_jwt_extended import JWTManager
@@ -35,7 +35,8 @@ from Database.connect import connect_db
 from Database.functions import (
     create_db,
     delete_data,
-    reset_db
+    reset_db,
+    load_db
 )
 
 load_dotenv()
@@ -45,8 +46,8 @@ STR_NOW = datetime.now().strftime("%Y-%m-%d")
 FORMAT = "[%(asctime)-15s] - %(levelname)s - %(message)s"
 
 # Creating log folder
-logs_exists = os.path.exists("logs")
-if not logs_exists:
+LOGS_EXISTS = os.path.exists("logs")
+if not LOGS_EXISTS:
     os.makedirs("logs")
 
 LOGS_FOLDER = os.path.join(os.path.dirname(__file__), "logs")
@@ -63,6 +64,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--create-db", action="store_true")
 parser.add_argument("--clear-db", action="store_true")
 parser.add_argument("--reset-db", action="store_true")
+parser.add_argument("--load-db", action="store_true")
 parser.add_argument("--init", action="store_true")
 
 
@@ -76,12 +78,14 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=90)
 jwt = JWTManager(app)
 
+
 def _build_cors_preflight_response():
     response = make_response()
     response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add("Access-Control-Allow-Headers", "*")
     response.headers.add("Access-Control-Allow-Methods", "*")
     return response
+
 
 @app.before_request
 def before_req():
@@ -93,7 +97,7 @@ def before_req():
 
     to_log = "Start of Request - "
     to_log += "Road asked: " + str(request.path)
-    if request.method == "OPTIONS": # CORS preflight
+    if request.method == "OPTIONS":  # CORS preflight
         return _build_cors_preflight_response()
     if not request:
         logging.error(to_log)
@@ -120,13 +124,15 @@ def after_req(returned_value):
     return returned_value
 
 
-app.add_url_rule("/openSession", "openSession", open_session, methods=["POST", "OPTIONS"])
+app.add_url_rule("/openSession", "openSession",
+                 open_session, methods=["POST", "OPTIONS"])
 app.add_url_rule("/register", "refresh", register, methods=["POST", "OPTIONS"])
 app.add_url_rule("/login", "login", login, methods=["POST", "OPTIONS"])
 app.add_url_rule("/match", "match", match, methods=["POST", "OPTIONS"])
 app.add_url_rule("/pull", "pull", pull, methods=["GET", "OPTIONS"])
 app.add_url_rule("/push", "push", push, methods=["POST", "OPTIONS"])
-app.add_url_rule("/healthcheck", "healthcheck", healthcheck, methods=["GET", "OPTIONS"])
+app.add_url_rule("/healthcheck", "healthcheck",
+                 healthcheck, methods=["GET", "OPTIONS"])
 
 
 def main(*args, debug=False, run=False):
@@ -168,6 +174,9 @@ def main(*args, debug=False, run=False):
             if app_args.reset_db:
                 logging.info("== Reseting Database ==")
                 reset_db()
+            if app_args.load_db:
+                logging.info("== Loading Database ==")
+                load_db()
             break
         print("== Connection failed ==", file=stdout)
         cpt -= 1
