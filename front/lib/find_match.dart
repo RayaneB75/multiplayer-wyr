@@ -3,7 +3,9 @@ import 'package:frontend/wyr.dart';
 
 class FindMatchWindow extends StatelessWidget {
   final String? token;
-  const FindMatchWindow({super.key, required this.token});
+  final String userId;
+  
+  const FindMatchWindow({super.key, required this.token, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -15,13 +17,22 @@ class FindMatchWindow extends StatelessWidget {
           height: 32,
         ),
       ),
-      body: const Center(child: FindMatchForm()),
+      body: Center(
+        child: Column(
+          children:<Widget>[
+            FindMatchForm(userId: userId,),
+            // more if necessary 
+          ]
+        )
+      ),
     );
   }
 }
 
 class FindMatchForm extends StatelessWidget {
-  const FindMatchForm({super.key});
+  final String userId;
+
+  const FindMatchForm({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +87,7 @@ class FindMatchForm extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          Text('Player ID'),
+                         Text('userId'),
                           // ElevatedButton(
                           //   child: const Text('Close BottomSheet'),
                           //   onPressed: () => Navigator.pop(context),

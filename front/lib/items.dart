@@ -52,6 +52,16 @@ class PasswordFieldCustom extends StatefulWidget {
 
 class _PasswordFieldCustomState extends State<PasswordFieldCustom> {
 
+  // Initially password is obscure
+  bool _obscureText = true;
+
+  // Toggles the password show status
+  void _toggle() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
       return Padding(
@@ -66,10 +76,25 @@ class _PasswordFieldCustomState extends State<PasswordFieldCustom> {
               return null;
             },
           controller: widget.controller,
-          obscureText: true,
+          obscureText: _obscureText,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             labelText: widget.content,
+            suffixIcon: IconButton(
+            icon: Icon(
+              // Based on passwordVisible state choose the icon
+               _obscureText
+               ? Icons.visibility
+               : Icons.visibility_off,
+               ),
+            onPressed: () {
+               // Update the state i.e. toogle the state of passwordVisible variable
+               setState(() {
+                   _obscureText = !_obscureText;
+               });
+             },
+            ),
+
           ),
         ),
       );

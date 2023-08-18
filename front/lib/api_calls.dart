@@ -69,7 +69,10 @@ class ApiCalls {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            FindMatchWindow(token: getToken(response.body)),
+                            FindMatchWindow(
+                              token: (jsonDecode(response.body))['token'],
+                              userId: (jsonDecode(response.body))['user_id'],
+                              ),
                       ))
                 }
               else
