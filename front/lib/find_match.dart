@@ -66,6 +66,7 @@ class FindMatchWindow extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     showModalBottomSheet<void>(
+                      showDragHandle: true,
                       context: context,
                       builder: (BuildContext context) {
                         return SizedBox(
@@ -75,7 +76,7 @@ class FindMatchWindow extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                Text('$userId'),
+                                Text('$userId', style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
                                 // ElevatedButton(
                                 //   child: const Text('Close BottomSheet'),
                                 //   onPressed: () => Navigator.pop(context),
