@@ -1,4 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:universal_html/html.dart' as html;
 
 import 'package:flutter/material.dart';
@@ -66,9 +67,14 @@ class _MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
+            GradientText(
               'Tu préfères ...',
-              style: TextStyle(fontSize: 30),
+              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              colors: const [
+                  Colors.blue,
+                  Colors.red,
+                  Colors.teal,
+              ],
             ),
             const SizedBox(height: 120),
             ElevatedButton(
