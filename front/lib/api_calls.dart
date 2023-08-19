@@ -66,7 +66,7 @@ class ApiCalls {
         .then((response) => {
               if (response.statusCode == 200)
                 {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => FindMatchWindow(
