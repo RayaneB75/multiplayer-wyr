@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 class WyrWindow extends StatelessWidget {
-  const WyrWindow({super.key});
+
+  final String firstProp;
+  final String secondProp;
+  
+  const WyrWindow({super.key, required this.firstProp, required this.secondProp});
 
   @override
   Widget build(BuildContext context) {
@@ -34,33 +38,37 @@ class WyrWindow extends StatelessWidget {
           
         ),
       ),
-      body: const Center(
-        child: Wyr()
+      body: Center(
+        child: Wyr(firstProp: firstProp, secondProp: secondProp)
       ),
     );
   }
 }
 
 class Wyr extends StatelessWidget {
-  const Wyr({super.key});
+
+  final String firstProp;
+  final String secondProp;
+
+  const Wyr({super.key, required this.firstProp, required this.secondProp});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Text('Tu préfères ?', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-          SizedBox(height: 120),
+          const Text('Tu préfères ?', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 120),
           Choice(
-            buttonText: "Installer NeoVim",
+            buttonText: firstProp,
           ),
-          SizedBox(height: 50),
-          Text('Ou', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-          SizedBox(height: 50),
+          const SizedBox(height: 50),
+          const Text('Ou', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 50),
           Choice(
-            buttonText: "Installer Emacs",
+            buttonText: secondProp,
           ),
         ],
       ),

@@ -96,7 +96,7 @@ class ApiCalls {
     return result;
   }
 
-  // login endpoint management
+  // match endpoint management
   static Future match(String userId, BuildContext context) async {
     const String endpoint = "match";
     int result = 0;
@@ -115,13 +115,51 @@ class ApiCalls {
         .then((response) => {
               if (response.statusCode == 200)
                 {
+                  pullQuestions(context),
+                }
+              else
+                {
+                  showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Erreur'),
+                      content: Text(jsonDecode(response.body)),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'OK'),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  )
+                }
+            });
+
+    return result;
+  }
+
+    // match endpoint management
+  static Future pullQuestions(BuildContext context) async {
+    const String endpoint = "pull";
+    int result = 0;
+
+    await http
+        .get(
+          Uri.parse('$protocol://$domain:$port/$endpoint'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: "Bearer $loginToken",
+          },
+        )
+        .then((response) => {
+              if (response.statusCode == 200)
+                {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const WyrWindow(
-                            // remove const to pass userId
-                            // token: (jsonDecode(response.body))['token'],
-                            // userId: (jsonDecode(response.body))['user_id'],
+                        builder: (context) => WyrWindow(
+                            firstProp: (jsonDecode(response.body))['first_prop'],
+                            secondProp: (jsonDecode(response.body))['second_prop'],
                             ),
                       ))
                 }
@@ -145,4 +183,5 @@ class ApiCalls {
 
     return result;
   }
+
 }
