@@ -71,9 +71,8 @@ class _MainPageState extends State<MainPage> {
               'Tu préfères ...',
               style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
               colors: const [
-                  Colors.blue,
-                  Colors.red,
-                  Colors.teal,
+                  Colors.brown,
+                  Colors.orange,
               ],
             ),
             const SizedBox(height: 120),
