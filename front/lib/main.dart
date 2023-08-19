@@ -90,6 +90,38 @@ class _MainPageState extends State<MainPage> {
                 );
               },
             ),
+            const SizedBox(height: 150),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 25),
+              child: ElevatedButton(
+                onPressed: () {
+                  showModalBottomSheet<void>(
+                    showDragHandle: true,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const SizedBox(
+                        //height: 1000,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text('show rules here'),
+                              // ElevatedButton(
+                              //   child: const Text('Close BottomSheet'),
+                              //   onPressed: () => Navigator.pop(context),
+                              // ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: const Text('Regles du jeu'),
+              ),
+            ),
           ],
         ),
       ),
