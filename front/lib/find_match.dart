@@ -37,6 +37,7 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Image.asset(
           'assets/logo_resel.png',
           fit: BoxFit.contain,

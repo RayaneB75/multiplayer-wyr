@@ -18,7 +18,8 @@ class ApiCalls {
 
   static String loginToken = "";
 
-  static String lastError = "";
+  static int user_id = 0;
+
 
   // opensession endpoint management
   static Future openSession() async {
@@ -69,11 +70,11 @@ class ApiCalls {
                       context,
                       MaterialPageRoute(
                         builder: (context) => FindMatchWindow(
-                          token: loginToken =
-                              (jsonDecode(response.body))['token'],
-                          userId: (jsonDecode(response.body))['user_id'],
+                          token: loginToken = (jsonDecode(response.body))['token'],
+                          userId: user_id = (jsonDecode(response.body))['user_id'],
                         ),
-                      ))
+                      )
+                    )
                 }
               else
                 {
@@ -115,7 +116,7 @@ class ApiCalls {
         .then((response) => {
               if (response.statusCode == 200)
                 {
-                  pullQuestions(context),
+                  pullQuestions(userId, context),
                 }
               else
                 {
@@ -139,7 +140,7 @@ class ApiCalls {
   }
 
     // match endpoint management
-  static Future pullQuestions(BuildContext context) async {
+  static Future pullQuestions(String userId, BuildContext context) async {
     const String endpoint = "pull";
     int result = 0;
 
@@ -160,6 +161,7 @@ class ApiCalls {
                         builder: (context) => WyrWindow(
                             firstProp: (jsonDecode(response.body))['first_prop'],
                             secondProp: (jsonDecode(response.body))['second_prop'],
+                            userId: userId,
                             ),
                       ))
                 }
@@ -184,4 +186,53 @@ class ApiCalls {
     return result;
   }
 
+  // match endpoint management
+  static Future pushAnswer(String userId, BuildContext context) async {
+    const String endpoint = "push";
+    int result = 0;
+
+    await http
+        .post(
+          Uri.parse('$protocol://$domain:$port/$endpoint'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: "Bearer $loginToken",
+          },
+          body: jsonEncode(<String, String>{
+            "userId": userId,
+          }),
+        )
+        .then((response) => {
+              if (response.statusCode == 200)
+                {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FindMatchWindow(
+                            token: loginToken,
+                            userId: user_id,
+                          ),
+                    )
+                  )
+                }
+              else
+                {
+                  showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Erreur'),
+                      content: Text(jsonDecode(response.body)),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'OK'),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  )
+                }
+            });
+
+    return result;
+  }
 }
