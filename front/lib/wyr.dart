@@ -77,6 +77,13 @@ class Wyr extends StatelessWidget {
             buttonText: secondProp,
             userId: userId,
           ),
+          const SizedBox(height: 150),
+          ElevatedButton(
+            child: const Text('Nouvelles propositions'),
+            onPressed: () {
+              ApiCalls.pullQuestions(userId, context); // stateless solution
+            },
+          ),
         ],
       ),
     );
