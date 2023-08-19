@@ -12,6 +12,7 @@ void main() async {
   final splash = html.querySelector('#splash');
   if (splash != null) {
     await loadEnv();
+    await ApiCalls.initEnv();
     await ApiCalls.openSession();
     splash.remove();
   }

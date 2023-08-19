@@ -8,10 +8,10 @@ import 'package:http/http.dart' as http;
 import 'package:frontend/find_match.dart';
 
 class ApiCalls {
-  static String? jwtToken = dotenv.env['JWT_PASSWORD'];
-  static String? protocol = dotenv.env['API_SRV_PROTOCOL'];
-  static String? domain = dotenv.env['API_SRV_HOSTNAME'];
-  static String? port = dotenv.env['API_SRV_PORT'];
+  static String? jwtToken;
+  static String? protocol;
+  static String? domain;
+  static String? port;
 
   static String token = "";
   static String refreshToken = "";
@@ -19,6 +19,14 @@ class ApiCalls {
   static String loginToken = "";
 
   static int user_id = 0;
+
+  static Future initEnv() async {
+    await dotenv.load(fileName: ".env");
+    jwtToken = dotenv.env['JWT_PASSWORD'];
+    protocol = dotenv.env['API_SRV_PROTOCOL'];
+    domain = dotenv.env['API_SRV_HOSTNAME'];
+    port = dotenv.env['API_SRV_PORT'];
+  }
 
 
   // opensession endpoint management
