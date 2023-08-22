@@ -81,7 +81,7 @@ class _RegisterFormState extends State<RegisterForm> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: ElevatedButton(
               onPressed: () {
-                if (_formKey.currentState!.validate()) {
+                if (_formKey.currentState!.validate() && passwordController.text == passwordCheckController.text) { // add message when password are not the same
                   ApiCalls.register(emailController.text, passwordController.text, context);
                 }
               },
