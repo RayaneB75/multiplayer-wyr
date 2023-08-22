@@ -35,8 +35,21 @@ class Main extends StatelessWidget {
     return MaterialApp(
       title: 'Tu préfères ? by ResEl',
       home: const MainPage(),
-      theme: ThemeData.light(
+      theme: ThemeData(
         useMaterial3: true,
+        colorScheme: const ColorScheme(
+          brightness: Brightness.light,
+          primary: Colors.brown,
+          onPrimary: Colors.white,
+          secondary: Colors.white,
+          onSecondary: Colors.orange,
+          error: Colors.red,
+          onError: Colors.white,
+          background: Colors.white,
+          onBackground: Colors.black,
+          surface: Colors.white,
+          onSurface: Colors.black,
+        ), 
       ),
     );
   }
