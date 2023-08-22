@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/login.dart';
 import 'package:frontend/wyr.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/find_match.dart';
@@ -243,4 +244,53 @@ class ApiCalls {
 
     return result;
   }
+
+  static Future register(
+      String email, String password, BuildContext context) async {
+    const String endpoint = "register";
+    int result = 0;
+
+    await http
+        .post(
+          Uri.parse('$protocol://$domain:$port/$endpoint'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+          body: jsonEncode(<String, String>{
+            "email": email,
+            "password": password,
+          }),
+        )
+        .then((response) => {
+              if (response.statusCode == 200)
+                {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginWindow(),
+                      )
+                    )
+                }
+              else
+                {
+                  showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Erreur'),
+                      content: Text(jsonDecode(response.body)),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'OK'),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  )
+                }
+            });
+
+    return result;
+  }
+  
 }

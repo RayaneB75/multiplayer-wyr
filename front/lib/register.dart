@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/api_calls.dart';
 import 'package:frontend/items.dart';
-import 'package:frontend/login.dart';
 
 class RegisterWindow extends StatelessWidget {
   const RegisterWindow({super.key});
@@ -82,10 +82,7 @@ class _RegisterFormState extends State<RegisterForm> {
             child: ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginWindow()),
-                  );
+                  ApiCalls.register(emailController.text, passwordController.text, context);
                 }
               },
               child: const Text('S\'enregistrer'),
