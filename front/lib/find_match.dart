@@ -37,6 +37,7 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Image.asset(
           'assets/logo_resel.png',
           fit: BoxFit.contain,
@@ -49,6 +50,7 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              const SizedBox(height: 120),
               const Text(
                 'Trouve un partenaire !',
                 style: TextStyle(fontSize: 30),
@@ -104,7 +106,7 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 75),
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 25),
                 child: ElevatedButton(
                   onPressed: () {
                     showModalBottomSheet<void>(

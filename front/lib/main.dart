@@ -1,4 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:universal_html/html.dart' as html;
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ void main() async {
   final splash = html.querySelector('#splash');
   if (splash != null) {
     await loadEnv();
+    await ApiCalls.initEnv();
     await ApiCalls.openSession();
     splash.remove();
   }
@@ -33,8 +35,21 @@ class Main extends StatelessWidget {
     return MaterialApp(
       title: 'Tu préfères ? by ResEl',
       home: const MainPage(),
-      theme: ThemeData.light(
+      theme: ThemeData(
         useMaterial3: true,
+        colorScheme: const ColorScheme(
+          brightness: Brightness.light,
+          primary: Colors.brown,
+          onPrimary: Colors.white,
+          secondary: Colors.white,
+          onSecondary: Colors.orange,
+          error: Colors.red,
+          onError: Colors.white,
+          background: Colors.white,
+          onBackground: Colors.black,
+          surface: Colors.white,
+          onSurface: Colors.black,
+        ), 
       ),
     );
   }
@@ -65,9 +80,13 @@ class _MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
+            GradientText(
               'Tu préfères ...',
-              style: TextStyle(fontSize: 30),
+              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              colors: const [
+                  Colors.brown,
+                  Colors.orange,
+              ],
             ),
             const SizedBox(height: 120),
             ElevatedButton(
@@ -89,6 +108,38 @@ class _MainPageState extends State<MainPage> {
                   MaterialPageRoute(builder: (context) => const LoginWindow()),
                 );
               },
+            ),
+            const SizedBox(height: 150),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 25),
+              child: ElevatedButton(
+                onPressed: () {
+                  showModalBottomSheet<void>(
+                    showDragHandle: true,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const SizedBox(
+                        //height: 1000,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text('show rules here'),
+                              // ElevatedButton(
+                              //   child: const Text('Close BottomSheet'),
+                              //   onPressed: () => Navigator.pop(context),
+                              // ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: const Text('Regles du jeu'),
+              ),
             ),
           ],
         ),

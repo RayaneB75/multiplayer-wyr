@@ -62,7 +62,7 @@ class _PasswordFieldCustomState extends State<PasswordFieldCustom> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'S\'il vous plait renseignez ce champ';
-          } else if (value.length < 8) {
+          } else if (value.length < 6) {
             return 'Le mot de passe est trop court';
           }
           return null;

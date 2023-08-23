@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/api_calls.dart';
 import 'package:frontend/items.dart';
-import 'package:frontend/login.dart';
 
 class RegisterWindow extends StatelessWidget {
   const RegisterWindow({super.key});
@@ -81,11 +81,8 @@ class _RegisterFormState extends State<RegisterForm> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: ElevatedButton(
               onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginWindow()),
-                  );
+                if (_formKey.currentState!.validate() && passwordController.text == passwordCheckController.text) { // add message when password are not the same
+                  ApiCalls.register(emailController.text, passwordController.text, context);
                 }
               },
               child: const Text('S\'enregistrer'),

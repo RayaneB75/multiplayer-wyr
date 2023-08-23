@@ -3,22 +3,32 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/login.dart';
 import 'package:frontend/wyr.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/find_match.dart';
 
 class ApiCalls {
-  static String? jwtToken = dotenv.env['JWT_PASSWORD'];
-  static String? protocol = dotenv.env['API_SRV_PROTOCOL'];
-  static String? domain = dotenv.env['API_SRV_HOSTNAME'];
-  static String? port = dotenv.env['API_SRV_PORT'];
+  static String? jwtToken;
+  static String? protocol;
+  static String? domain;
+  static String? port;
 
   static String token = "";
   static String refreshToken = "";
 
   static String loginToken = "";
 
-  static String lastError = "";
+  static int user_id = 0;
+
+  static Future initEnv() async {
+    await dotenv.load(fileName: ".env");
+    jwtToken = dotenv.env['JWT_PASSWORD'];
+    protocol = dotenv.env['API_SRV_PROTOCOL'];
+    domain = dotenv.env['API_SRV_HOSTNAME'];
+    port = dotenv.env['API_SRV_PORT'];
+  }
+
 
   // opensession endpoint management
   static Future openSession() async {
@@ -65,15 +75,15 @@ class ApiCalls {
         .then((response) => {
               if (response.statusCode == 200)
                 {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => FindMatchWindow(
-                          token: loginToken =
-                              (jsonDecode(response.body))['token'],
-                          userId: (jsonDecode(response.body))['user_id'],
+                          token: loginToken = (jsonDecode(response.body))['token'],
+                          userId: user_id = (jsonDecode(response.body))['user_id'],
                         ),
-                      ))
+                      )
+                    )
                 }
               else
                 {
@@ -96,7 +106,7 @@ class ApiCalls {
     return result;
   }
 
-  // login endpoint management
+  // match endpoint management
   static Future match(String userId, BuildContext context) async {
     const String endpoint = "match";
     int result = 0;
@@ -115,13 +125,52 @@ class ApiCalls {
         .then((response) => {
               if (response.statusCode == 200)
                 {
+                  pullQuestions(userId, context),
+                }
+              else
+                {
+                  showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Erreur'),
+                      content: Text(jsonDecode(response.body)),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'OK'),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  )
+                }
+            });
+
+    return result;
+  }
+
+    // match endpoint management
+  static Future pullQuestions(String userId, BuildContext context) async {
+    const String endpoint = "pull";
+    int result = 0;
+
+    await http
+        .get(
+          Uri.parse('$protocol://$domain:$port/$endpoint'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: "Bearer $loginToken",
+          },
+        )
+        .then((response) => {
+              if (response.statusCode == 200)
+                {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const WyrWindow(
-                            // remove const to pass userId
-                            // token: (jsonDecode(response.body))['token'],
-                            // userId: (jsonDecode(response.body))['user_id'],
+                        builder: (context) => WyrWindow(
+                            firstProp: (jsonDecode(response.body))['first_prop'],
+                            secondProp: (jsonDecode(response.body))['second_prop'],
+                            userId: userId,
                             ),
                       ))
                 }
@@ -145,4 +194,103 @@ class ApiCalls {
 
     return result;
   }
+
+  // match endpoint management
+  static Future pushAnswer(String userId, BuildContext context) async {
+    const String endpoint = "push";
+    int result = 0;
+
+    await http
+        .post(
+          Uri.parse('$protocol://$domain:$port/$endpoint'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: "Bearer $loginToken",
+          },
+          body: jsonEncode(<String, String>{
+            "userId": userId,
+          }),
+        )
+        .then((response) => {
+              if (response.statusCode == 200)
+                {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FindMatchWindow(
+                            token: loginToken,
+                            userId: user_id,
+                          ),
+                    )
+                  )
+                }
+              else
+                {
+                  showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Erreur'),
+                      content: Text(jsonDecode(response.body)),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'OK'),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  )
+                }
+            });
+
+    return result;
+  }
+
+  static Future register(
+      String email, String password, BuildContext context) async {
+    const String endpoint = "register";
+    int result = 0;
+
+    await http
+        .post(
+          Uri.parse('$protocol://$domain:$port/$endpoint'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: "Bearer $token",
+          },
+          body: jsonEncode(<String, String>{
+            "email": email,
+            "password": password,
+          }),
+        )
+        .then((response) => {
+              if (response.statusCode == 200)
+                {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginWindow(),
+                      )
+                    )
+                }
+              else
+                {
+                  showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Erreur'),
+                      content: Text(jsonDecode(response.body)),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'OK'),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  )
+                }
+            });
+
+    return result;
+  }
+  
 }
