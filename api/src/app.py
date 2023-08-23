@@ -104,8 +104,7 @@ def before_req():
     if not request:
         logging.error(to_log)
         return after_req(return_json(None))
-    else:
-        logging.info(to_log)
+    logging.info(to_log)
 
 
 @app.after_request

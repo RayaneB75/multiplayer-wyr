@@ -16,9 +16,10 @@ from Misc.user_logic import (
     email_to_user_id,
     set_game_state,
     is_user_in_game,
-    is_user_available,
+    is_duo_available,
     get_user_score,
-    add_new_duel
+    add_new_duel,
+    get_user_full_name
 )
 from Misc.json_maker import return_json
 
@@ -39,33 +40,32 @@ def match():
 
     user_i = str(email_to_user_id(user_i_email))
 
-    if not request.is_json:
-        logging.error("/match: no data passed to function")
-        return return_json(404, "no data passed to function")
+    if not request.is_json or not isinstance(request.json, dict):
+        logging.error("/match: no or wrong data passed to function")
+        return return_json(404, "no or wrong data passed to function")
 
     try:
         _json = request.json
-        if not isinstance(_json, dict):
-            logging.error("/match: json is not dictionnary format")
-            return return_json(404, "json is not dictionnary format")
         user_r = str(_json.get("userId", None))
 
         if user_r == user_i:
             return return_json(404, "Vous ne pouvez pas jouer avec vous même")
         if user_r is None or not is_user_in_db(user_r, "user_id", "Users"):
             return return_json(404, "Cet utilisateur n'existe pas")
-        logging.debug("is duel possible: %s",
-                      is_user_available(user_i, user_r))
-        if not is_user_available(user_i, user_r):
+        if is_user_in_game(user_r) != 0:
+            return return_json(404, "Le joueur est déjà en partie")
+        if not is_duo_available(user_i, user_r):
             return return_json(404, "Vous avez déjà joué avec cet utilisateur")
         # All the checks are done, we can add the match to the database
-        set_game_state(user_i, 1)
-        set_game_state(user_r, 1)
+        set_game_state(user_i, user_r)
+        set_game_state(user_r, user_i)
     except Exception as err:
         logging.error(
             ("/match: json parsing error data -> %s \n %s", str(request.args), err))
         return return_json(404, "Un problème est survenu lors de la création de la partie")
-    return return_json(200, {"dueled_user": user_r})
+    user_full_name = get_user_full_name(user_r)
+    result = user_full_name[0] + " " + user_full_name[1]
+    return return_json(200, {"dueled_user": result})
 
 
 @jwt_required()
@@ -80,7 +80,8 @@ def pull():
     user_i_email = get_jwt_identity()
     if not is_user_in_db(user_i_email, "email", "Users"):
         return return_json(404, "Vous n'êtes pas connecté")
-    if not is_user_in_game(email_to_user_id(user_i_email)):
+
+    if is_user_in_game(email_to_user_id(user_i_email)) == 0:
         return return_json(404, "Vous n'avez pas de partie en cours")
 
     question_number = random.randint(1, 389)
@@ -96,6 +97,7 @@ def pull():
             if item[0] == question_number or str(item[0]) == question_number:
                 cnx.close()
                 return return_json(200, {"first_prop": item[1], "second_prop": item[2]})
+        return None
     except mysql_errors.Error as err:
         logging.error(
             "Error while getting user data from the database : %s", err)
@@ -116,40 +118,36 @@ def push():
     if not is_user_in_db(user_i_email, "email", "Users"):
         return return_json(404, "Vous n'êtes pas connecté")
 
-    if not is_user_in_game(email_to_user_id(user_i_email)):
+    if is_user_in_game(email_to_user_id(user_i_email)) == 0:
         return return_json(404, "Vous n'avez pas de partie en cours")
 
-    if not request.is_json or not isinstance(request.json, dict):
-        logging.error(
-            "/match: no data passed to function or json is not dictionnary format")
-        return return_json(404, "no data passed to function json is not dictionnary format")
-
-    _json = request.json
-
     try:
-        user_r = str(_json.get("userId", None))
+        user_r = is_user_in_game(user_i)
         cnx = connect_db()
         if cnx is None:
             logging.error("Cannot connect to DB")
             return return_json(404, "Cannot connect to DB")
 
         cursor = cnx.cursor()
+        new_score_i = 0
         new_score = 0
         for user in [user_i, user_r]:
             if user == user_i:
                 new_score = get_user_score(user) + 3
-            else:
+                new_score_i = new_score
+            if user == user_r:
                 new_score = get_user_score(user) + 1
+            logging.debug("nouvau score pour %s : %s", user, new_score)
             cursor.execute(
                 "UPDATE Users SET score = %s WHERE user_id = %s", (new_score, user,))
         cnx.commit()
         set_game_state(user_i, 0)
-        set_game_state(user_i, 0)
+        set_game_state(user_r, 0)
         add_new_duel(user_i, user_r)
 
     except Exception as err:
         logging.error(
-            ("/match: json parsing error data -> %s \n %s", str(request.args), err))
+            ("/push: json parsing error data -> %s \n %s", str(request.args), err))
         return return_json(404, "Un problème est survenu lors de la création de la partie")
-
-    return return_json(200, {"my_user_id": user_i})
+    result = "Nouveau score : " + str(new_score_i)
+    return return_json(200, result)
