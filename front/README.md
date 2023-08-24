@@ -14,10 +14,11 @@ To run the app type: ```flutter run -d chrome```
 Add the following environment variables to an .env file at the root of the project:
 
 ```
-JWT_SECRET=
-JWT_PASSWORD=
-JWT_TOKEN=token
-API_SRV_HOSTNAME=
-API_SRV_PORT=443
-API_SRV_PROTOCOL=https
+# Secret partagé entre le front et le back
+FRONT_TOKEN=token
+
+# Variable d'environnement
+API_SRV_HOSTNAME=api_inte
+API_SRV_PORT=80
+API_SRV_PROTOCOL=http
 ```

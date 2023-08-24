@@ -13,7 +13,7 @@ import mysql.connector as mysql
 
 
 config = {
-    "database": os.getenv("DB_DATABASE", "app_inte"),
+    "database": os.getenv("MYSQL_DATABASE", "app_inte"),
     "user": os.getenv("MYSQL_USER", "api"),
     "password": os.getenv("MYSQL_PASSWORD", "api"),
     "host": os.getenv("MYSQL_HOST", "localhost"),
