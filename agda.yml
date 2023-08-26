@@ -5,23 +5,15 @@ metadata:
   namespace: $NAMESPACE
 type: Opaque
 stringData:
-  POSTGRES_PASSWORD: $DB_PASSWORD
-  DJANGO_SECRET: $DJANGO_SECRET
-  REPMGR_PASSWORD: $REPMGR_PASSWORD
-  PGPOOL_ADMIN_PASSWORD: $PGPOOL_ADMIN_PASSWORD
-  POSTGRES_ADMIN_PASSWORD: $POSTGRES_ADMIN_PASSWORD
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: ${APP_NAME}-django-pvc
-  namespace: $NAMESPACE
-spec:
-  accessModes:
-  - ReadWriteMany
-  resources:
-    requests:
-      storage: 2Gi
+  MYSQL_DATABASE: $MYSQL_DATABASE
+  MYSQL_USER: $MYSQL_USER
+  MYSQL_PASSWORD: $MYSQL_PASSWORD
+  MYSQL_REPLICATION_USER: $MYSQL_REPLICATION_USER
+  MYSQL_REPLICATION_PASSWORD: $MYSQL_REPLICATION_PASSWORD
+  DASH_TOKEN: $DASH_TOKEN
+  FRONT_TOKEN: $FRONT_TOKEN
+  JWT_SECRET_KEY: $JWT_SECRET_KEY
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -38,64 +30,66 @@ spec:
       labels:
         app: $APP_NAME
     spec:
-      volumes:
-      - name: django-pv
-        persistentVolumeClaim:
-          claimName: ${APP_NAME}-django-pvc
-      initContainers:
-      - name: django-static
-        image: $IMAGE
-        env:
-        - name: STATIC_ROOT_PATH
-          value: "/usr/share/nginx/html"
-        volumeMounts:
-        - name: django-pv
-          mountPath: /usr/share/nginx/html
-          subPath: static
-        command: [ "python3", "manage.py", "collectstatic", "--noinput" ]
       containers:
-      - name: django
-        image: $IMAGE
+      - name: front
+        image: $IMAGE_FRONT_LATEST
         env:
-        - name: POSTGRES_HOST
-          value: ${APP_NAME}-pgpool
-        - name: DJANGO_URL
-          value: $APP_URL
-        - name: POSTGRES_DB
-          value: $DB_NAME
-        - name: POSTGRES_USER
-          value: $DB_USER
-        - name: POSTGRES_PASSWORD
+        - name: FRONT_TOKEN
           valueFrom:
             secretKeyRef:
               name: ${APP_NAME}-secrets
-              key: POSTGRES_PASSWORD
-        - name: DJANGO_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: ${APP_NAME}-secrets
-              key: DJANGO_SECRET
-        volumeMounts:
-        - name: django-pv
-          mountPath: /code/media_db
-          subPath: media_db
-        ports:
-        - containerPort: 8000
-      - name: nginx
-        image: nginx:latest
+              key: FRONT_TOKEN
+        - name: API_SRV_HOSTNAME
+          value: "localhost"
+        - name: API_SRV_PORT
+          value: "5000"
+        - name: API_SRV_PROTOCOL
+          value: "http"
         ports:
         - containerPort: 80
-        volumeMounts:
-        - name: django-pv
-          mountPath: /usr/share/nginx/html/static
-          subPath: static
-        - name: django-pv
-          mountPath: /usr/share/nginx/html/media_db
-          subPath: media_db
-          readOnly: true
+      - name: back
+        image: $IMAGE_BACK_LATEST
+        env:
+        - name: MYSQL_HOST
+          value: ""
+        - name: MYSQL_PORT
+          value: "3306"
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: ${APP_NAME}-secrets
+              key: MYSQL_DATABASE
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: ${APP_NAME}-secrets
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ${APP_NAME}-secrets
+              key: MYSQL_PASSWORD
+        - name: FRONT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: ${APP_NAME}-secrets
+              key: FRONT_TOKEN
+        - name: DASH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: ${APP_NAME}-secrets
+              key: DASH_TOKEN
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ${APP_NAME}-secrets
+              key: JWT_SECRET_KEY
+        ports:
+        - containerPort: 5000
       imagePullSecrets:
         - name: docker-registry-secret
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -105,18 +99,29 @@ spec:
   selector:
     app: $APP_NAME
   ports:
-    - name: django
-      protocol: TCP
-      port: 8000
-      targetPort: 8000
-    - name: nginx
+    - name: front
       protocol: TCP
       port: 80
       targetPort: 80
   type: ClusterIP
-
-
 ---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${APP_NAME}-db-configmap
+  namespace: $NAMESPACE
+data:
+  primary.cnf: |
+    # Apply this config only on the primary.
+    [mysqld]
+    log-bin    
+  replica.cnf: |
+    # Apply this config only on replicas.
+    [mysqld]
+    super-read-only  
+---
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -132,64 +137,93 @@ spec:
     metadata:
       labels:
         app: ${APP_NAME}-db
-    spec:    
-      volumes:
-      - name: db-backup
-        configMap:
-          name: db-backup
+    spec:
+      initContainers:
+      - name: init-mysql
+        image: docker.resel.fr/openresel/mysql_master:latest
+        command:
+        - bash
+        - "-c"
+        - |
+          set -ex
+          # Generate mysql server-id from pod ordinal index.
+          [[ $HOSTNAME =~ -([0-9]+)$ ]] || exit 1
+          ordinal=${BASH_REMATCH[1]}
+          echo [mysqld] > /mnt/conf.d/server-id.cnf
+          # Add an offset to avoid reserved server-id=0 value.
+          echo server-id=$((100 + $ordinal)) >> /mnt/conf.d/server-id.cnf
+          # Copy appropriate conf.d files from config-map to emptyDir.
+          if [[ $ordinal -eq 0 ]]; then
+            cp /mnt/config-map/primary.cnf /mnt/conf.d/
+          else
+            cp /mnt/config-map/replica.cnf /mnt/conf.d/
+          fi          
+        volumeMounts:
+        - name: conf
+          mountPath: /mnt/conf.d
+        - name: config-map
+          mountPath: /mnt/config-map
       containers:
-      - name: db
-        image: bitnami/postgresql-repmgr:15-debian-11
-        imagePullPolicy: "IfNotPresent"
+      - name: mysql
+        image: docker.resel.fr/openresel/mysql_master:latest
         env:
-        - name: BITNAMI_DEBUG
-          value: "false"
-        - name: POSTGRESQL_VOLUME_DIR
-          value: /var/lib/postgresql/data
-        - name: POSTGRESQL_DATABASE
-          value: $DB_NAME
-        - name: POSTGRESQL_USERNAME
-          value: $DB_USER
-        - name: POSTGRESQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: ${APP_NAME}-secrets
-              key: POSTGRES_PASSWORD
-        - name: POSTGRESQL_POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: ${APP_NAME}-secrets
-              key: POSTGRES_ADMIN_PASSWORD
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: STATEFULSET_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: REPMGR_PARTNER_NODES
-          value: "${APP_NAME}-db-0.${APP_NAME}-db.$(STATEFULSET_NAMESPACE).svc.cluster.local,${APP_NAME}-db-1.${APP_NAME}-db.$(STATEFULSET_NAMESPACE).svc.cluster.local,${APP_NAME}-db-2.${APP_NAME}-db.$(STATEFULSET_NAMESPACE).svc.cluster.local"
-        - name: REPMGR_PRIMARY_HOST
-          value: "${APP_NAME}-db-0.${APP_NAME}-db.$(STATEFULSET_NAMESPACE).svc.cluster.local"
-        - name: REPMGR_NODE_NAME
-          value: "$(POD_NAME)"
-        - name: REPMGR_NODE_NETWORK_NAME
-          value: "$(POD_NAME).${APP_NAME}-db.$(STATEFULSET_NAMESPACE).svc.cluster.local"
-        - name: REPMGR_USERNAME
-          value: "repmgr"
-        - name: REPMGR_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: ${APP_NAME}-secrets
-              key: REPMGR_PASSWORD  
+          - name: MYSQL_DATABASE
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-secrets
+                key: MYSQL_DATABASE
+          - name: MYSQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-secrets
+                key: MYSQL_USER
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-secrets
+                key: MYSQL_PASSWORD
+          - name: MYSQL_REPLICATION_USER
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-secrets
+                key: MYSQL_REPLICATION_USER
+          - name: MYSQL_REPLICATION_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-secrets
+                key: MYSQL_REPLICATION_PASSWORD                
+        ports:
+        - name: mysql
+          containerPort: 3306
         volumeMounts:
         - name: ${APP_NAME}-db-pvc
-          mountPath: /var/lib/postgresql/data
-        - name: db-backup
-          mountPath: /docker-entrypoint-initdb.d/
-        ports:
-        - containerPort: 5432
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: conf
+          mountPath: /etc/mysql/conf.d
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+        livenessProbe:
+          exec:
+            command: ["mysqladmin", "ping"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            # Check we can execute queries over TCP (skip-networking is off).
+            command: ["mysql", "-h", "127.0.0.1", "-e", "SELECT 1"]
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 1
+    volumes:
+    - name: conf
+      emptyDir: {}
+    - name: config-map
+      configMap:
+        name: ${APP_NAME}-db-configmap
   volumeClaimTemplates:
   - metadata:
       name: ${APP_NAME}-db-pvc
@@ -201,6 +235,7 @@ spec:
         requests:
           storage: 2Gi
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -209,102 +244,10 @@ metadata:
 spec:
   ports:
     - name: ${APP_NAME}-db
-      port: 5432
+      port: 3306
   clusterIP: None
   selector:
     app: ${APP_NAME}-db
-
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ${APP_NAME}-pgpool
-  namespace: $NAMESPACE
-spec:
-  replicas: 1
-  selector:
-    matchLabels: 
-      app: ${APP_NAME}-pgpool
-  template:
-    metadata:
-      labels: 
-        app: ${APP_NAME}-pgpool
-    spec:          
-      securityContext:
-        fsGroup: 1001
-      containers:
-        - name: pgpool
-          image: bitnami/pgpool:4-debian-11
-          imagePullPolicy: "IfNotPresent"
-          securityContext:
-            runAsUser: 1001
-          env:
-            - name: BITNAMI_DEBUG
-              value: "false"
-            - name: PGPOOL_BACKEND_NODES
-              value: 0:${APP_NAME}-db-0.${APP_NAME}-db:5432,1:${APP_NAME}-db-1.${APP_NAME}-db:5432,2:${APP_NAME}-db-2.${APP_NAME}-db:5432
-            - name: PGPOOL_SR_CHECK_USER
-              value: "repmgr"
-            - name: PGPOOL_SR_CHECK_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: ${APP_NAME}-secrets
-                  key: REPMGR_PASSWORD
-            - name: PGPOOL_SR_CHECK_DATABASE
-              value: $DB_NAME
-            - name: PGPOOL_POSTGRES_USERNAME
-              value: $DB_USER
-            - name: PGPOOL_POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: ${APP_NAME}-secrets
-                  key: POSTGRES_PASSWORD
-            - name: PGPOOL_ADMIN_USERNAME
-              value: "admin"
-            - name: PGPOOL_ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: ${APP_NAME}-secrets
-                  key: PGPOOL_ADMIN_PASSWORD
-            - name: PGPOOL_ENABLE_LOAD_BALANCING
-              value: "yes"
-            - name: PGPOOL_ENABLE_LOG_CONNECTIONS
-              value: "no"
-            - name: PGPOOL_ENABLE_LOG_HOSTNAME
-              value: "yes"
-            - name: PGPOOL_ENABLE_LOG_PER_NODE_STATEMENT
-              value: "no"
-            - name: PGPOOL_CHILD_LIFE_TIME
-              value: ""
-            - name: PGPOOL_ENABLE_TLS
-              value: "no"
-          ports:
-            - name: postgresql
-              containerPort: 5432
-              protocol: TCP
-          livenessProbe:
-            exec:
-              command:
-                - /opt/bitnami/scripts/pgpool/healthcheck.sh
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            successThreshold: 1
-            failureThreshold: 5
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ${APP_NAME}-pgpool
-  namespace: $NAMESPACE
-spec:
-  ports:
-    - name: ${APP_NAME}-pgpool
-      port: 5432
-  selector:
-    app: ${APP_NAME}-pgpool
-
 
 ---
 apiVersion: networking.k8s.io/v1
@@ -324,24 +267,10 @@ spec:
   - host: $APP_URL
     http:
       paths:
-      - path: /static
-        pathType: Prefix
-        backend:
-          service:
-            name: $APP_NAME
-            port:
-              number: 80
-      - path: /media_db
-        pathType: Prefix
-        backend:
-          service:
-            name: $APP_NAME
-            port:
-              number: 80
       - path: /
         pathType: Prefix
         backend:
           service:
             name: $APP_NAME
             port:
-              number: 8000
+              number: 80
