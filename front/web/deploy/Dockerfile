@@ -20,8 +20,11 @@ RUN flutter channel stable
 RUN flutter upgrade
 RUN flutter config --enable-web
 
+RUN mkdir /app
+
+COPY . /app
+
 WORKDIR /app
-COPY / .
 
 RUN flutter pub get
 RUN flutter build web
