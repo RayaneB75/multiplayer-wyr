@@ -21,7 +21,7 @@ RUN flutter upgrade
 RUN flutter config --enable-web
 
 WORKDIR /app
-COPY . .
+COPY / .
 
 RUN flutter pub get
 RUN flutter build web
