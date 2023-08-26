@@ -24,9 +24,9 @@ RUN mkdir /app
 
 COPY . /app
 
-RUN ls
-
 WORKDIR /app
+
+RUN ls
 
 RUN flutter pub get
 RUN flutter build web
