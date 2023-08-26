@@ -38,8 +38,8 @@ Build docker image:
   image: docker:stable
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $IMAGE_BACK ./api/Dockerfile
-    - docker build -t $IMAGE_FRONT ./front/web/deploy/Dockerfile
+    - docker build -t $IMAGE_BACK ./api/
+    - docker build -t $IMAGE_FRONT ./front/web/deploy/
     - docker push $IMAGE_BACK
     - docker push $IMAGE_FRONT
   only:
