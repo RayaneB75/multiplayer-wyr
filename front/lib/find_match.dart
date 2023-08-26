@@ -5,7 +5,7 @@ import 'api_calls.dart';
 
 class FindMatchWindow extends StatefulWidget {
   final String token;
-  final int userId;
+  final String userId;
 
   const FindMatchWindow({super.key, required this.token, required this.userId});
 
@@ -120,7 +120,7 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                Text('${widget.userId}',
+                                Text(widget.userId,
                                     style: const TextStyle(
                                         fontSize: 30,
                                         fontWeight: FontWeight.bold)),

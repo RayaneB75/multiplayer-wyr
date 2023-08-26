@@ -29,6 +29,7 @@ from game import (
     pull,
     push,
 )
+from dashboard import dashboard
 from Misc.healthcheck import healthcheck
 from Misc.json_maker import return_json
 from Database.connect import connect_db
@@ -134,6 +135,8 @@ app.add_url_rule("/pull", "pull", pull, methods=["GET", "OPTIONS"])
 app.add_url_rule("/push", "push", push, methods=["POST", "OPTIONS"])
 app.add_url_rule("/healthcheck", "healthcheck",
                  healthcheck, methods=["GET", "OPTIONS"])
+app.add_url_rule("/pub/dashboard", "dashboard",
+                 dashboard, methods=["GET", "OPTIONS"])
 
 
 def main(*args, debug=False, run=False):
@@ -165,6 +168,7 @@ def main(*args, debug=False, run=False):
         conn = connect_db()
         if conn is not None:
             conn.close()
+            load_db()
             print("== Connection succeed ==", file=stdout)
             if app_args.clear_db:
                 logging.info("== Clearing Database ==")
@@ -175,9 +179,6 @@ def main(*args, debug=False, run=False):
             if app_args.reset_db:
                 logging.info("== Reseting Database ==")
                 reset_db()
-            if app_args.load_db:
-                logging.info("== Loading Database ==")
-                load_db()
             if app_args.load_fake_users:
                 logging.info("== Loading Users with fake data ==")
                 load_fake_users()

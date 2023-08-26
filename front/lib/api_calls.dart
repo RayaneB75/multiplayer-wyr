@@ -2,32 +2,25 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/login.dart';
 import 'package:frontend/wyr.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/find_match.dart';
 
 class ApiCalls {
-  static String? jwtToken;
-  static String? protocol;
-  static String? domain;
-  static String? port;
+  static const String protocol =
+      String.fromEnvironment('API_SRV_PROTOCOL', defaultValue: 'http');
+  static const String domain =
+      String.fromEnvironment('API_SRV_HOSTNAME', defaultValue: 'localhost');
+  static const String port =
+      String.fromEnvironment('API_SRV_PORT', defaultValue: '5000');
 
   static String token = "";
   static String refreshToken = "";
 
   static String loginToken = "";
 
-  static int user_id = 0;
-
-  static Future initEnv() async {
-    await dotenv.load(fileName: ".env");
-    jwtToken = dotenv.env['FRONT_TOKEN'];
-    protocol = dotenv.env['API_SRV_PROTOCOL'];
-    domain = dotenv.env['API_SRV_HOSTNAME'];
-    port = dotenv.env['API_SRV_PORT'];
-  }
+  static int userId = 0;
 
   // opensession endpoint management
   static Future openSession() async {
@@ -40,7 +33,7 @@ class ApiCalls {
       },
       body: jsonEncode(<String, String?>{
         "name": "front",
-        "password": jwtToken,
+        "password": const String.fromEnvironment('FRONT_TOKEN'),
       }),
     );
     if (result.statusCode == 200) {
@@ -80,7 +73,7 @@ class ApiCalls {
                         builder: (context) => FindMatchWindow(
                           token: loginToken =
                               (jsonDecode(response.body))['token'],
-                          userId: user_id =
+                          userId: userId =
                               (jsonDecode(response.body))['user_id'],
                         ),
                       ))
@@ -217,7 +210,7 @@ class ApiCalls {
                       MaterialPageRoute(
                         builder: (context) => FindMatchWindow(
                           token: loginToken,
-                          userId: user_id,
+                          userId: userId,
                         ),
                       ))
                 }
