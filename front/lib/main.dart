@@ -12,15 +12,9 @@ void main() async {
 
   final splash = html.querySelector('#splash');
   if (splash != null) {
-    await loadEnv();
-    await ApiCalls.initEnv();
     await ApiCalls.openSession();
     splash.remove();
   }
-}
-
-Future<void> loadEnv() async {
-  await dotenv.load(fileName: ".env");
 }
 
 class Main extends StatelessWidget {
@@ -49,7 +43,7 @@ class Main extends StatelessWidget {
           onBackground: Colors.black,
           surface: Colors.white,
           onSurface: Colors.black,
-        ), 
+        ),
       ),
     );
   }
@@ -63,7 +57,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,8 +77,8 @@ class _MainPageState extends State<MainPage> {
               'Tu préfères ...',
               style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
               colors: const [
-                  Colors.brown,
-                  Colors.orange,
+                Colors.brown,
+                Colors.orange,
               ],
             ),
             const SizedBox(height: 120),
@@ -111,8 +104,7 @@ class _MainPageState extends State<MainPage> {
             ),
             const SizedBox(height: 150),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 25),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 25),
               child: ElevatedButton(
                 onPressed: () {
                   showModalBottomSheet<void>(

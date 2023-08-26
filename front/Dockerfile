@@ -27,7 +27,7 @@ COPY . /app
 WORKDIR /app
 
 RUN flutter pub get
-RUN flutter build web
+RUN flutter build web --dart-define=FRONT_TOKEN=$FRONT_TOKEN
 
 # Deploy
 FROM nginx:stable-alpine
