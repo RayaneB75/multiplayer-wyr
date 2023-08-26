@@ -22,3 +22,5 @@ API_SRV_HOSTNAME=api_inte
 API_SRV_PORT=80
 API_SRV_PROTOCOL=http
 ```
+
+Then execute the following command : `$source .env`
