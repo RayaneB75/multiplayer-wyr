@@ -1,4 +1,3 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -6,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/api_calls.dart';
 import 'package:frontend/register.dart';
 import 'package:frontend/login.dart';
+import 'package:frontend/find_match.dart';
 
 void main() async {
   runApp(const Main());
@@ -20,6 +20,17 @@ void main() async {
 class Main extends StatelessWidget {
   const Main({super.key});
 
+  Future<List> get jwtOrEmpty async {
+    var openJwt = await storage.read(key: "openJwt");
+    if (openJwt != null && openJwt != "") {
+      var jwt = await storage.read(key: "jwt");
+      var userId = await storage.read(key: "userId");
+      return [jwt, userId];
+    }
+
+    return ["", ""];
+  }
+
   // Check if the user is connected, if not,
   // redirect to the login page
 
@@ -28,7 +39,6 @@ class Main extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Tu préfères ? by ResEl',
-      home: const MainPage(),
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: const ColorScheme(
@@ -44,6 +54,20 @@ class Main extends StatelessWidget {
           surface: Colors.white,
           onSurface: Colors.black,
         ),
+      ),
+      home: FutureBuilder(
+        future: jwtOrEmpty,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return const CircularProgressIndicator();
+          if (snapshot.data != ["", ""]) {
+            String jwt = snapshot.data?[0] ?? "";
+            String userId = snapshot.data?[1] ?? "";
+
+            return FindMatchWindow(token: jwt, userId: userId);
+          } else {
+            return const Main();
+          }
+        },
       ),
     );
   }

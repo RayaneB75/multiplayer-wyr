@@ -6,6 +6,9 @@ import 'package:frontend/login.dart';
 import 'package:frontend/wyr.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/find_match.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+const FlutterSecureStorage storage = FlutterSecureStorage();
 
 class ApiCalls {
   static const String protocol =
@@ -38,9 +41,7 @@ class ApiCalls {
     );
     if (result.statusCode == 200) {
       final json = jsonDecode(result.body);
-
-      token = json['token'];
-      refreshToken = json['refresh_token'];
+      storage.write(key: "openJwt", value: json['token']);
     } else {
       throw Exception('Failed to open session');
     }
