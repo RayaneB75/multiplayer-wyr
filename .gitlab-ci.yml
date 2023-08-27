@@ -37,6 +37,8 @@ Build docker image:
   stage: build
   image: docker:stable
   script:
+    - rm -f front/Dockerfile
+    - envsubst < front/Dockerfile.input > front/Dockerfile 
     - docker build -t $IMAGE_BACK ./api/
     - docker build -t $IMAGE_FRONT ./front/
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
