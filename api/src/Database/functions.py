@@ -166,6 +166,7 @@ def load_db():
     try:
         cnx = connect_db()
         cursor = cnx.cursor()
+        create_db()
         if cnx is None:
             logging.error("db connection failed")
             return False
@@ -240,7 +241,7 @@ def load_fake_users():
             fake_file.close()
     except mysql.Error as err:
         logging.error(
-            "Error while loading data into the database : %s", err)
+            "Error while loading fake data into the database : %s", err)
         return False
     finally:
         cnx.close()
