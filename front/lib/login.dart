@@ -81,7 +81,7 @@ class _LoginFormState extends State<LoginForm> {
                 if (isFrontValid) {
                   // call login api
                   // ignore: unrelated_type_equality_checks
-                  login(emailController.text, passwordController.text, context);
+                  login(emailController.text.toLowerCase(), passwordController.text, context);
                 }
               },
               child: const Text('Connexion'),
