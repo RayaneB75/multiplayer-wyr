@@ -105,7 +105,7 @@ def pull():
 
 
 @jwt_required()
-# POST /push
+# GET /push
 def push():
     """
     Pushes the answers to the server
