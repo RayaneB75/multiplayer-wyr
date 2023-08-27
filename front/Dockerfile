@@ -27,7 +27,9 @@ COPY . /app
 WORKDIR /app
 
 RUN flutter pub get
-RUN flutter build web --dart-define=FRONT_TOKEN=$FRONT_TOKEN
+RUN flutter build web --dart-define=FRONT_TOKEN=$FRONT_TOKEN --dart-define=API_SRV_PROTOCOL=$API_SRV_PROTOCOL \
+    --dart-define=API_SRV_PROTOCOL=$API_SRV_HOSTNAME --dart-define=API_SRV_PORT=$API_SRV_PORT \
+
 
 # Deploy
 FROM nginx:stable-alpine
