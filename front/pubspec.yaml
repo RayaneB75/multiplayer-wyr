@@ -40,7 +40,6 @@ dependencies:
   flutter_dotenv: ^5.0.0
   universal_html: ^2.2.3
   simple_gradient_text: ^1.2.4
-  flutter_secure_storage: ^8.0.0
 
 dev_dependencies:
   flutter_test:

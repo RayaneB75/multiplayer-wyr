@@ -38,8 +38,6 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
 
   @override
   Widget build(BuildContext context) {
-    storage.write(key: "jwt", value: widget.token);
-    storage.write(key: "userId", value: widget.userId);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
