@@ -16,6 +16,26 @@ class WyrWindow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(
+      //   title: Column(
+      //     mainAxisAlignment: MainAxisAlignment.center,
+      //     crossAxisAlignment: CrossAxisAlignment.center,
+      //     children: [
+      //       const Padding(
+      //         padding: EdgeInsets.only(top: 10),
+      //         child: Text(
+      //         "Would you rather ?",
+      //         ),
+      //       ),
+      //       GestureDetector(
+      //         child: const Text('sample subtitle', style: TextStyle(fontSize: 13)),
+      //         onTap: () {
+
+      //         },
+      //       )
+      //     ]
+      //   ),
+      // ),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Image.asset(
