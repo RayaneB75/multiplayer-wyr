@@ -1,0 +1,89 @@
+image: 
+  name: docker.resel.fr/openresel/outils/ci-kubectl-deploy:latest
+
+services:
+  - docker:dind
+
+variables:
+  NAMESPACE: $CI_PROJECT_NAME
+  IMAGE_BACK: $CI_REGISTRY_IMAGE-back:$CI_COMMIT_SHORT_SHA
+  IMAGE_FRONT: $CI_REGISTRY_IMAGE-front:$CI_COMMIT_SHORT_SHA
+  IMAGE_BACK_LATEST: $CI_REGISTRY_IMAGE-back:latest
+  IMAGE_FRONT_LATEST: $CI_REGISTRY_IMAGE-front:latest
+  DOCKER_DRIVER: overlay2
+  APP_NAME: $CI_COMMIT_BRANCH-$CI_PROJECT_NAME
+  TLS_SECRET_NAME:  $CI_PROJECT_NAME-tls-cert
+
+stages:
+- build
+- test
+- push
+- deploy
+
+include:
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Security/Container-Scanning.gitlab-ci.yml
+
+container_scanning:
+  variables:
+    CS_IMAGE: $IMAGE
+  rules:
+    - if: $CI_COMMIT_BRANCH == "preprod"
+    - if: $CI_COMMIT_BRANCH == "prod"
+
+Build docker image:
+  stage: build
+  image: $DOCKER_IMAGE
+  script:
+    - rm -f front/Dockerfile
+    - envsubst < front/Dockerfile.input > front/Dockerfile 
+    - docker build -t $IMAGE_BACK ./api/
+    - docker build -t $IMAGE_FRONT ./front/
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $IMAGE_BACK
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $IMAGE_FRONT
+  only:
+    - preprod
+    - prod
+
+Push image:
+  stage: push
+  image: docker:stable
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE_BACK
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $IMAGE_FRONT
+    - docker tag $IMAGE_BACK $IMAGE_BACK_LATEST
+    - docker tag $IMAGE_FRONT $IMAGE_FRONT_LATEST
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $IMAGE_BACK_LATEST
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $IMAGE_FRONT_LATEST
+  only:
+    - preprod
+    - prod
+
+
+Deploy to Preprod:
+  stage: deploy
+  before_script: &before_script
+    - echo $KUBECONFIG | base64 -d > kubeconfig.yml
+    - export KUBECONFIG=`pwd`/kubeconfig.yml
+  script:
+    - export APP_URL=$CI_PROJECT_NAME.preprod.app.resel.fr
+    - envsubst < agda.yml | kubectl apply -f -
+  only:
+    - preprod
+
+Deploy to Prod:
+  stage: deploy
+  before_script: *before_script
+  script:
+    - export APP_URL=$CI_PROJECT_NAME.app.resel.fr
+    - envsubst < agda.yml | kubectl apply -f -
+  only:
+    - prod

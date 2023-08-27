@@ -1,27 +1,26 @@
-# frontend
+# Front end of integration app 2023
 
-A new Flutter project.
+This is the front end of the application for the integration evening. 
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+To run the app locally, please [install flutter](https://docs.flutter.dev/get-started/install) and move to the **front/** directory
 
-A few resources to get you started if this is your first Flutter project:
+To run the app type: ```flutter run -d chrome```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
 
 ## Init
 
-Ajouter les variables d'environnements suivantes dans un fichier .env à la racine du projet:
+Add the following environment variables to an .env file at the root of the project:
 
 ```
-JWT_TOKEN=token
+# Secret partagé entre le front et le back
+FRONT_TOKEN=token
+
+# Variable d'environnement
 API_SRV_HOSTNAME=api_inte
 API_SRV_PORT=80
 API_SRV_PROTOCOL=http
 ```
+
+Then execute the following command : `$source .env`

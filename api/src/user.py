@@ -104,13 +104,13 @@ def register():
 
     # Check if the email exists in LDAP
     if not is_user_in_db(email, "email", "Ldap"):
-        return return_json(404, "Invalid email.")
+        return return_json(404, "L'email n'existe pas.")
 
     # Check if the user is already registered
     if is_user_in_db(email, "email", "Users"):
-        return return_json(404, "Email already exists.")
+        return return_json(404, "Cet utilisateur existe déjà.")
     # Generate a random 6-digit ID
-    user_id = random.randint(100000, 999999)
+    user_id = random.randint(100, 999)
     score = 0
     try:
         cnx = connect_db()
@@ -129,7 +129,7 @@ def register():
         return return_json(404, "Error while inserting user data into the database : ")
     cursor.close()
     cnx.close()
-    return return_json(200, "User registered successfully.")
+    return return_json(200, "Vous pouvez désormais vous connecter.")
 
 
 # POST /login
@@ -161,10 +161,9 @@ def login():
 
     email = _json.get("email", None)
     password = _json.get("password", None)
-    logging.info("%s trying to connnect", email)
 
     if email is None or password is None:
-        return return_json(404, "Missing email or password.")
+        return return_json(404, "Email ou mot de passe manquant.")
 
     hashed_db_password = get_db_password(email)
     if hashed_db_password is None:
@@ -179,4 +178,4 @@ def login():
         return return_json(200, {"token": token, "refresh_token": refresh_token, "user_id": user_id})
 
     logging.error("/login: Passwords mismatch")
-    return return_json(404, "Wrong password.")
+    return return_json(404, "Mot de passe incorrect.")

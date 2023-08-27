@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/api_calls.dart';
 import 'package:frontend/items.dart';
-import 'package:frontend/login.dart';
 
 class RegisterWindow extends StatelessWidget {
   const RegisterWindow({super.key});
@@ -13,12 +13,9 @@ class RegisterWindow extends StatelessWidget {
           'assets/logo_resel.png',
           fit: BoxFit.contain,
           height: 32,
-          
         ),
       ),
-      body: const Center(
-        child: RegisterForm()
-      ),
+      body: const Center(child: RegisterForm()),
     );
   }
 }
@@ -31,7 +28,6 @@ class RegisterForm extends StatefulWidget {
 }
 
 class _RegisterFormState extends State<RegisterForm> {
-
   final _formKey = GlobalKey<FormState>();
 
   final emailController = TextEditingController();
@@ -56,36 +52,32 @@ class _RegisterFormState extends State<RegisterForm> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-    
           const Text(
             'S\'enregistrer',
             style: TextStyle(fontSize: 30),
           ),
-    
           const SizedBox(height: 120),
-    
           TextFieldCustom(
             controller: emailController,
             content: "Entre ton e-mail IMT Atlantique",
-            ),
+          ),
           PasswordFieldCustom(
             controller: passwordController,
             content: "Entre ton mot de passe",
-            ),
+          ),
           PasswordFieldCustom(
             controller: passwordCheckController,
             content: "Confirme ton mot de passe",
-            ),
-    
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
             child: ElevatedButton(
               onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginWindow()),
-                  );
+                if (_formKey.currentState!.validate() &&
+                    passwordController.text == passwordCheckController.text) {
+                  // add message when password are not the same
+                  ApiCalls.register(
+                      emailController.text, passwordController.text, context);
                 }
               },
               child: const Text('S\'enregistrer'),

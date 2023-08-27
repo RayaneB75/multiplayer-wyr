@@ -12,6 +12,7 @@
 # Python
 **/__pycache__/
 **/logs/
+**/*.export
 
 # VSCode
 .vscode/

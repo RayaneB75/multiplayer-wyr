@@ -26,7 +26,7 @@ source venv/bin/activate
 Récupération des variables d'environnement (voir .env.sample) :
 
 ```bash
-export DB_DATABASE=[]
+export MYSQL_DATABASE=[]
 export MYSQL_USER=[]
 export MYSQL_PASSWORD=[]
 export MYSQL_HOST=[@ip du container]

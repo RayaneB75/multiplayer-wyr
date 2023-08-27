@@ -30,8 +30,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./rproxy.conf:/etc/nginx/conf.d/nginx.conf
-    environment:
-      - TZ=Europe/Paris
     depends_on:
       api:
         condition: service_started

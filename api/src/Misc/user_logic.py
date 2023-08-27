@@ -10,10 +10,10 @@ import mysql.connector.errors as mysql_errors
 from Database.connect import connect_db
 
 
-def is_user_available(user_i, user_r):
+def is_duo_available(user_i, user_r):
     """
-    Check if the user is available to play
-        * Return        : True if the user is available, False otherwise
+    Check if the duo is available to play
+        * Return        : True, False
         * Param         : user
     """
     try:
@@ -25,8 +25,7 @@ def is_user_available(user_i, user_r):
         cursor.execute("SELECT user_i, user_r FROM Matches")
 
         for item in cursor:
-            logging.debug(item[0] == user_i and item[1] == user_r)
-            if item[0] == user_i and item[1] == user_r:
+            if str(item[0]) == str(user_i) and str(item[1]) == str(user_r):
                 return False
         cursor.close()
         cnx.close()
@@ -120,7 +119,7 @@ def is_user_in_db(iden, id_type, table):
         return False
 
 
-def is_user_in_game(user_id) -> bool:
+def is_user_in_game(user_id) -> int:
     """	
     Check if the user is in game
         * Return        : True if the user is in game, False otherwise
@@ -128,18 +127,17 @@ def is_user_in_game(user_id) -> bool:
     """
     try:
         cnx = connect_db()
-        result = False
+        result = 0
         if cnx is None:
             logging.error("Cannot connect to DB")
             return None
         cursor = cnx.cursor()
-        cursor.execute("SELECT user_id, in_game FROM Users")
+        cursor.execute("SELECT user_id, in_game_with FROM Users")
         for item in cursor:
             if item[0] == user_id or str(item[0]) == user_id:
-                if item[1] == '1':
-                    result = True
+                result = item[1]
                 cnx.close()
-                return result
+                return int(result)
         cnx.close()
         return result
     except mysql.Error as err:
@@ -185,7 +183,7 @@ def set_game_state(user_id, state):
         if cnx is None:
             logging.error("Cannot connect to DB")
         cursor = cnx.cursor()
-        query = "UPDATE Users SET in_game = %s WHERE user_id = %s"
+        query = "UPDATE Users SET in_game_with = %s WHERE user_id = %s"
         cursor.execute(query, (state, user_id,))
 
         cnx.commit()
@@ -201,6 +199,7 @@ def get_user_score(user_id):
         * Return        : score of the user
         * Param         : user_id
     """
+    result = 0
     try:
         cnx = connect_db()
         if cnx is None:
@@ -210,8 +209,9 @@ def get_user_score(user_id):
         cursor.execute("SELECT user_id, score FROM Users")
         for item in cursor:
             if item[0] == user_id or str(item[0]) == user_id:
+                result = item[1]
                 cnx.close()
-                return item[1]
+                return result
         cnx.close()
         return None
     except mysql.Error as err:
@@ -237,3 +237,35 @@ def add_new_duel(user_i, user_r,):
     except mysql.Error as err:
         logging.error(
             "Error while getting user data from the database : %s", err)
+
+
+def get_user_full_name(user_id):
+    """
+    Get the first name of user in the database
+        * Return        : tab[0] = first name / tab[1] = last name
+        * Param         : user_id
+    """
+    result = ""
+    try:
+        cnx = connect_db()
+        if cnx is None:
+            logging.error("Cannot connect to DB")
+            return None
+        cursor = cnx.cursor()
+        cursor.execute("SELECT user_id, email FROM Users")
+        for item in cursor:
+            if item[0] == user_id or str(item[0]) == user_id:
+                result = item[1]
+                cnx.close()
+                break
+        cnx.close()
+        if result == "":
+            return None
+        name_separated_by_dot = result.split("@")[0]
+        first_name = name_separated_by_dot.split(".")[0]
+        last_name = name_separated_by_dot.split(".")[1]
+        return [first_name.capitalize(), last_name.upper()]
+
+    except mysql.Error as err:
+        logging.error("Error while getting user score from DB : %s", err)
+        return None

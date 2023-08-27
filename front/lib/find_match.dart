@@ -5,10 +5,13 @@ import 'api_calls.dart';
 
 class FindMatchWindow extends StatefulWidget {
   final String token;
-  final int userId;
+  final String userId;
 
-  const FindMatchWindow({super.key, required this.token, required this.userId});
-
+  const FindMatchWindow({
+    super.key,
+    required this.token,
+    required this.userId,
+  });
   @override
   State<FindMatchWindow> createState() => _FindMatchWindowState();
 }
@@ -37,6 +40,7 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Image.asset(
           'assets/logo_resel.png',
           fit: BoxFit.contain,
@@ -49,6 +53,7 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              const SizedBox(height: 120),
               const Text(
                 'Trouve un partenaire !',
                 style: TextStyle(fontSize: 30),
@@ -104,7 +109,7 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 75),
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 25),
                 child: ElevatedButton(
                   onPressed: () {
                     showModalBottomSheet<void>(
@@ -118,7 +123,7 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                Text('${widget.userId}',
+                                Text(widget.userId,
                                     style: const TextStyle(
                                         fontSize: 30,
                                         fontWeight: FontWeight.bold)),
