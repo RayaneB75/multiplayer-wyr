@@ -35,7 +35,7 @@ container_scanning:
 
 Build docker image:
   stage: build
-  image: docker:stable
+  image: docker.resel.fr/openresel/outils/ci-dind
   script:
     - rm -f front/Dockerfile
     - envsubst < front/Dockerfile.input > front/Dockerfile 
