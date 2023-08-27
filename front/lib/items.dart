@@ -116,8 +116,8 @@ class _PlayerIDFieldCustomState extends State<PlayerIDFieldCustom> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'S\'il vous plait renseignez ce champ';
-          } else if (value.length != 6) {
-            return 'Identifiant invalide (6 chiffres requis)';
+          } else if (value.length != 3) {
+            return 'Identifiant invalide (3 chiffres requis)';
           }
           return null;
         },
