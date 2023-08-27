@@ -77,7 +77,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     passwordController.text == passwordCheckController.text) {
                   // add message when password are not the same
                   ApiCalls.register(
-                      emailController.text, passwordController.text, context);
+                      emailController.text.toLowerCase(), passwordController.text, context);
                 }
               },
               child: const Text('S\'enregistrer'),
