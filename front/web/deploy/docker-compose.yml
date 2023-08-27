@@ -30,8 +30,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./rproxy.conf:/etc/nginx/conf.d/nginx.conf
-    env_file:
-      - app.env
     depends_on:
       api:
         condition: service_started
