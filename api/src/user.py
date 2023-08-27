@@ -110,7 +110,7 @@ def register():
     if is_user_in_db(email, "email", "Users"):
         return return_json(404, "Email already exists.")
     # Generate a random 6-digit ID
-    user_id = random.randint(100000, 999999)
+    user_id = random.randint(100, 999)
     score = 0
     try:
         cnx = connect_db()

@@ -27,7 +27,7 @@ def dashboard():
             result.append(user_dict)
             if cpt == 10:
                 break
-        return return_json(200, result)cffcfccffccffcffcccfcffcfcffccfcdfcddcdcfdxdcfdfcdxcdccfdfccfcfxdxfcdcfxcfcfdcffccfcfcdfcxfffcfcfcfcffcfdxffcfdxfcfddcdffdcdcdxfcdcdfxdcfffdff//////////////ddfffccfc
+        return return_json(200, result)
     except mysql_errors.Error as err:
         logging.error(
             "Error while getting user data from the database : %s", err)

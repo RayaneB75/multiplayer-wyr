@@ -135,10 +135,8 @@ def is_user_in_game(user_id) -> int:
         cursor.execute("SELECT user_id, in_game_with FROM Users")
         for item in cursor:
             if item[0] == user_id or str(item[0]) == user_id:
-                if item[1] != 0:
-                    result = item[1]
+                result = item[1]
                 cnx.close()
-                logging.debug("is %s in game : %s", item[0], result)
                 return int(result)
         cnx.close()
         return result
