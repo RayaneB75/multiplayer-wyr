@@ -21,9 +21,8 @@ class Main extends StatelessWidget {
   const Main({super.key});
 
   Future<List> get jwtOrEmpty async {
-    var openJwt = await storage.read(key: "openJwt");
-    if (openJwt != null && openJwt != "") {
-      var jwt = await storage.read(key: "jwt");
+    var jwt = await storage.read(key: "jwt");
+    if (jwt != null && jwt != "") {
       var userId = await storage.read(key: "userId");
       return [jwt, userId];
     }
@@ -58,15 +57,14 @@ class Main extends StatelessWidget {
       home: FutureBuilder(
         future: jwtOrEmpty,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const CircularProgressIndicator();
-          if (snapshot.data != ["", ""]) {
+          if (!snapshot.hasData) return const Main();
+          if (snapshot.data != ["", ""] && snapshot.data != null) {
             String jwt = snapshot.data?[0] ?? "";
             String userId = snapshot.data?[1] ?? "";
 
             return FindMatchWindow(token: jwt, userId: userId);
-          } else {
-            return const Main();
           }
+          return const Main();
         },
       ),
     );
