@@ -37,10 +37,11 @@ Build docker image:
   stage: build
   image: docker:stable
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker build -t $IMAGE_BACK ./api/
     - docker build -t $IMAGE_FRONT ./front/
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push $IMAGE_BACK
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push $IMAGE_FRONT
   only:
     - preprod
@@ -52,10 +53,13 @@ Push image:
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $IMAGE_BACK
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $IMAGE_FRONT
     - docker tag $IMAGE_BACK $IMAGE_BACK_LATEST
     - docker tag $IMAGE_FRONT $IMAGE_FRONT_LATEST
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push $IMAGE_BACK_LATEST
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push $IMAGE_FRONT_LATEST
   only:
     - preprod
