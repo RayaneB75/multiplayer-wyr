@@ -7,8 +7,11 @@ class FindMatchWindow extends StatefulWidget {
   final String token;
   final String userId;
 
-  const FindMatchWindow({super.key, required this.token, required this.userId});
-
+  const FindMatchWindow({
+    super.key,
+    required this.token,
+    required this.userId,
+  });
   @override
   State<FindMatchWindow> createState() => _FindMatchWindowState();
 }
@@ -35,6 +38,8 @@ class _FindMatchWindowState extends State<FindMatchWindow> {
 
   @override
   Widget build(BuildContext context) {
+    storage.write(key: "jwt", value: widget.token);
+    storage.write(key: "userId", value: widget.userId);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
