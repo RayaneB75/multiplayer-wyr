@@ -5,7 +5,7 @@ import 'api_calls.dart';
 class WyrWindow extends StatelessWidget {
   final String firstProp;
   final String secondProp;
-  final String userId;
+  final int userId;
 
   const WyrWindow(
       {super.key,
@@ -54,7 +54,7 @@ class WyrWindow extends StatelessWidget {
 class Wyr extends StatelessWidget {
   final String firstProp;
   final String secondProp;
-  final String userId;
+  final int userId;
 
   const Wyr(
       {super.key,
@@ -88,7 +88,7 @@ class Wyr extends StatelessWidget {
           ElevatedButton(
             child: const Text('Nouvelles propositions'),
             onPressed: () {
-              ApiCalls.pullQuestions(userId, context); // stateless solution
+              ApiCalls.pullQuestions(context); // stateless solution
             },
           ),
         ],
@@ -99,7 +99,7 @@ class Wyr extends StatelessWidget {
 
 class Choice extends StatelessWidget {
   final String buttonText;
-  final String userId;
+  final int userId;
 
   const Choice({Key? key, required this.buttonText, required this.userId})
       : super(key: key);
@@ -111,7 +111,7 @@ class Choice extends StatelessWidget {
       height: 100.0,
       child: ElevatedButton(
         onPressed: () {
-          ApiCalls.pushAnswer(userId, context);
+          ApiCalls.pushAnswer(context);
         },
         child: Text(buttonText,
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),

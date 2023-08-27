@@ -117,7 +117,7 @@ class ApiCalls {
         .then((response) => {
               if (response.statusCode == 200)
                 {
-                  pullQuestions(userId, context),
+                  pullQuestions(context),
                 }
               else
                 {
@@ -141,7 +141,7 @@ class ApiCalls {
   }
 
   // match endpoint management
-  static Future pullQuestions(String userId, BuildContext context) async {
+  static Future pullQuestions(BuildContext context) async {
     const String endpoint = "pull";
     int result = 0;
 
@@ -186,20 +186,20 @@ class ApiCalls {
   }
 
   // match endpoint management
-  static Future pushAnswer(String userId, BuildContext context) async {
+  static Future pushAnswer(BuildContext context) async {
     const String endpoint = "push";
     int result = 0;
 
     await http
-        .post(
+        .get(
           Uri.parse('$protocol://$domain:$port/$endpoint'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
             HttpHeaders.authorizationHeader: "Bearer $loginToken",
           },
-          body: jsonEncode(<String, String>{
-            "userId": userId,
-          }),
+          // body: jsonEncode(<String, int>{
+          //   "userId": userId,
+          // }),
         )
         .then((response) => {
               if (response.statusCode == 200)
