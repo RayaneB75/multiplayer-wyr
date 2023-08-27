@@ -168,14 +168,14 @@ def main(*args, debug=False, run=False):
         conn = connect_db()
         if conn is not None:
             conn.close()
+            logging.info("== Checking or creating tables ==")
+            create_db()
+            logging.info("== Loading database ==")
             load_db()
             print("== Connection succeed ==", file=stdout)
             if app_args.clear_db:
                 logging.info("== Clearing Database ==")
                 delete_data()
-            if app_args.create_db:
-                logging.info("== Creating Database ==")
-                create_db()
             if app_args.reset_db:
                 logging.info("== Reseting Database ==")
                 reset_db()
