@@ -104,7 +104,7 @@ def register():
 
     # Check if the email exists in LDAP
     if not is_user_in_db(email, "email", "Ldap"):
-        return return_json(404, "Invalid email.")
+        return return_json(404, "L'email n'existe pas.")
 
     # Check if the user is already registered
     if is_user_in_db(email, "email", "Users"):
@@ -129,7 +129,7 @@ def register():
         return return_json(404, "Error while inserting user data into the database : ")
     cursor.close()
     cnx.close()
-    return return_json(200, "User registered successfully.")
+    return return_json(200, "Vous pouvez désormais vous connecter.")
 
 
 # POST /login

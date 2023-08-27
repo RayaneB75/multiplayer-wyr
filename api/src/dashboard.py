@@ -18,16 +18,17 @@ def dashboard():
             logging.warning("!!!! DASHBOARD Cannot connect to DB !!!!")
             return return_json(404, "Cannot connect to DB")
         cursor = cnx.cursor()
-        cursor.execute("SELECT email, score FROM User ORDER BY score")
-        result = []
-        user_dict = {}
+        cursor.execute("SELECT user_id, score FROM Users ORDER BY score DESC")
+        result = {}
+        cpt = 1
         for item in cursor:
+            user_name = get_user_full_name(
+                item[0])[0] + " " + get_user_full_name(item[0])[1]
+            result[user_name] = item[1]
             cpt = cpt + 1
-            user_dict = {item[0], item[1]}
-            result.append(user_dict)
-            if cpt == 10:
+            if cpt == 11:
                 break
-        return return_json(200, result)
+        return return_json(200, sorted(result.items(), key=lambda x: x[1], reverse=True))
     except mysql_errors.Error as err:
         logging.error(
             "Error while getting user data from the database : %s", err)
