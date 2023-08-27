@@ -132,7 +132,7 @@ app.add_url_rule("/register", "refresh", register, methods=["POST", "OPTIONS"])
 app.add_url_rule("/login", "login", login, methods=["POST", "OPTIONS"])
 app.add_url_rule("/match", "match", match, methods=["POST", "OPTIONS"])
 app.add_url_rule("/pull", "pull", pull, methods=["GET", "OPTIONS"])
-app.add_url_rule("/push", "push", push, methods=["POST", "OPTIONS"])
+app.add_url_rule("/push", "push", push, methods=["GET", "OPTIONS"])
 app.add_url_rule("/healthcheck", "healthcheck",
                  healthcheck, methods=["GET", "OPTIONS"])
 app.add_url_rule("/pub/dashboard", "dashboard",

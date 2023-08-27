@@ -19,7 +19,7 @@ CREATE TABLE if not exists `Users` (
     `password` varchar(255) NOT NULL,
     `score` int NOT NULL,
     `user_id` int NOT NULL,
-    `in_game_with` int NOT NULL DEFAULT "0" CHECK(in_game_with IN ("0", "999999")),
+    `in_game_with` int NOT NULL DEFAULT "0",
     PRIMARY KEY (`user_id`),
     FOREIGN KEY (`email`) REFERENCES Ldap(`email`)
 ) ENGINE=InnoDB;
@@ -225,7 +225,7 @@ def load_fake_users():
                 for item in new_dict:
                     email, password = item
                     password = create_hashed_password(password)
-                    user_id = random.randint(100000, 999999)
+                    user_id = random.randint(100, 999)
                     score = random.randint(0, 100)
                     query = '''
                         INSERT INTO Users (email, password, score, user_id)
