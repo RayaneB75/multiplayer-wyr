@@ -79,9 +79,6 @@ def pull():
     if not is_user_in_db(user_i_email, "email", "Users"):
         return return_json(404, "Vous n'êtes pas connecté")
 
-    if is_user_in_game(email_to_user_id(user_i_email)) == 0:
-        return return_json(404, "Vous n'avez pas de partie en cours")
-
     question_number = random.randint(1, 389)
 
     try:
@@ -115,9 +112,6 @@ def push():
     user_i = email_to_user_id(user_i_email)
     if not is_user_in_db(user_i_email, "email", "Users"):
         return return_json(404, "Vous n'êtes pas connecté")
-
-    if is_user_in_game(email_to_user_id(user_i_email)) == 0:
-        return return_json(404, "Vous n'avez pas de partie en cours")
 
     try:
         user_r = is_user_in_game(user_i)
