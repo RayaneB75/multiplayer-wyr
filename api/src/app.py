@@ -135,7 +135,7 @@ app.add_url_rule("/pull", "pull", pull, methods=["GET", "OPTIONS"])
 app.add_url_rule("/push", "push", push, methods=["GET", "OPTIONS"])
 app.add_url_rule("/healthcheck", "healthcheck",
                  healthcheck, methods=["GET", "OPTIONS"])
-app.add_url_rule("/pub/dashboard", "dashboard",
+app.add_url_rule("/pub/leaderboard", "dashboard",
                  dashboard, methods=["GET", "OPTIONS"])
 
 
