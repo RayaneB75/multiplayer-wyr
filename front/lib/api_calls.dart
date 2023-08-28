@@ -117,7 +117,8 @@ class ApiCalls {
         .then((response) => {
               if (response.statusCode == 200)
                 {
-                  pullQuestions(context),
+                  pullQuestions(
+                      context, (jsonDecode(response.body))['dueled_user']),
                 }
               else
                 {
@@ -141,7 +142,8 @@ class ApiCalls {
   }
 
   // match endpoint management
-  static Future pullQuestions(BuildContext context) async {
+  static Future pullQuestions(
+      BuildContext context, String pullQuestions) async {
     const String endpoint = "pull";
     int result = 0;
 
@@ -161,6 +163,7 @@ class ApiCalls {
                       firstProp: (jsonDecode(response.body))['first_prop'],
                       secondProp: (jsonDecode(response.body))['second_prop'],
                       userId: userId,
+                      playedUser: playedUser,
                     ),
                   ))
             }
@@ -190,46 +193,44 @@ class ApiCalls {
     const String endpoint = "push";
     int result = 0;
 
-    await http
-        .get(
-          Uri.parse('$protocol://$domain:$port/$endpoint'),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-            HttpHeaders.authorizationHeader: "Bearer $loginToken",
-          },
-          // body: jsonEncode(<String, int>{
-          //   "userId": userId,
-          // }),
-        )
-        .then((response) => {
-              if (response.statusCode == 200)
-                {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => FindMatchWindow(
-                          token: loginToken,
-                          userId: userId,
-                        ),
-                      ))
-                }
-              else
-                {
-                  showDialog<String>(
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      title: const Text('Erreur'),
-                      content: Text(jsonDecode(response.body)),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, 'OK'),
-                          child: const Text('OK'),
-                        ),
-                      ],
+    await http.get(
+      Uri.parse('$protocol://$domain:$port/$endpoint'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: "Bearer $loginToken",
+      },
+      // body: jsonEncode(<String, int>{
+      //   "userId": userId,
+      // }),
+    ).then((response) => {
+          if (response.statusCode == 200)
+            {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FindMatchWindow(
+                      token: loginToken,
+                      userId: userId,
                     ),
-                  )
-                }
-            });
+                  ))
+            }
+          else
+            {
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text('Erreur'),
+                  content: Text(jsonDecode(response.body)),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'OK'),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+              )
+            }
+        });
 
     return result;
   }

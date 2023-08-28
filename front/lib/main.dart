@@ -117,11 +117,10 @@ class _MainPageState extends State<MainPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              Text('show rules here'),
-                              // ElevatedButton(
-                              //   child: const Text('Close BottomSheet'),
-                              //   onPressed: () => Navigator.pop(context),
-                              // ),
+                              Text("3 étapes : \n"
+                                  "- 1 : Trouve ton partenaire de jeu parmi la soirée"
+                                  "- 2 : Demande lui son identifiant utilisateur"
+                                  "- 3 : Propose lui le dilemme qui apparait sur ton écran, et clique sur sa réponse !"),
                             ],
                           ),
                         ),

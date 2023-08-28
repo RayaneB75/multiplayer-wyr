@@ -6,36 +6,18 @@ class WyrWindow extends StatelessWidget {
   final String firstProp;
   final String secondProp;
   final int userId;
+  final String playedUser;
 
   const WyrWindow(
       {super.key,
       required this.firstProp,
       required this.secondProp,
-      required this.userId});
+      required this.userId,
+      required this.playedUser});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Column(
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     crossAxisAlignment: CrossAxisAlignment.center,
-      //     children: [
-      //       const Padding(
-      //         padding: EdgeInsets.only(top: 10),
-      //         child: Text(
-      //         "Would you rather ?",
-      //         ),
-      //       ),
-      //       GestureDetector(
-      //         child: const Text('sample subtitle', style: TextStyle(fontSize: 13)),
-      //         onTap: () {
-
-      //         },
-      //       )
-      //     ]
-      //   ),
-      // ),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Image.asset(
@@ -46,7 +28,10 @@ class WyrWindow extends StatelessWidget {
       ),
       body: Center(
           child: Wyr(
-              firstProp: firstProp, secondProp: secondProp, userId: userId)),
+              firstProp: firstProp,
+              secondProp: secondProp,
+              userId: userId,
+              playedUser: playedUser)),
     );
   }
 }
@@ -55,12 +40,14 @@ class Wyr extends StatelessWidget {
   final String firstProp;
   final String secondProp;
   final int userId;
+  final String playedUser;
 
   const Wyr(
       {super.key,
       required this.firstProp,
       required this.secondProp,
-      required this.userId});
+      required this.userId,
+      required this.playedUser});
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +56,10 @@ class Wyr extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          Text('Tu joue actuellement avec : ${widget.playedUser}',
+              style:
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 50),
           const Text('Tu préfères ?',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
           const SizedBox(height: 120),
@@ -113,8 +104,13 @@ class Choice extends StatelessWidget {
         onPressed: () {
           ApiCalls.pushAnswer(context);
         },
-        child: Text(buttonText,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+        child: Text(
+            textAlign: TextAlign.center,
+            buttonText,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            )),
       ),
     );
   }
