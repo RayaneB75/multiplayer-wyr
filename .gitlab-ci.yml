@@ -38,6 +38,7 @@ Build Back image:
   image: docker.resel.fr/openresel/outils/ci-docker:latest
   script:
     - docker build -t $IMAGE_BACK ./api/
+    - docker build -t $IMAGE_BACK ./api/
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push $IMAGE_BACK
   only:
