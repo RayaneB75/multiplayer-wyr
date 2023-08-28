@@ -35,10 +35,8 @@ container_scanning:
 
 Build Back image:
   stage: build
-  image: $DOCKER_IMAGE
+  image: docker:stable
   script:
-    - rm -f front/Dockerfile
-    - envsubst < front/Dockerfile.input > front/Dockerfile 
     - docker build -t $IMAGE_BACK ./api/
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push $IMAGE_BACK
