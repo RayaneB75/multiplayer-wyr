@@ -6,10 +6,10 @@ services:
 
 variables:
   NAMESPACE: $CI_PROJECT_NAME
-  IMAGE_BACK: $CI_REGISTRY_IMAGE-back:$CI_COMMIT_SHORT_SHA
-  IMAGE_FRONT: $CI_REGISTRY_IMAGE-front:$CI_COMMIT_SHORT_SHA
-  IMAGE_BACK_LATEST: $CI_REGISTRY_IMAGE-back:latest
-  IMAGE_FRONT_LATEST: $CI_REGISTRY_IMAGE-front:latest
+  IMAGE_BACK: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA-back
+  IMAGE_FRONT: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA-front
+  IMAGE_BACK_LATEST: $CI_REGISTRY_IMAGE:latest-back
+  IMAGE_FRONT_LATEST: $CI_REGISTRY_IMAGE:latest-front
   DOCKER_DRIVER: overlay2
   APP_NAME: $CI_COMMIT_BRANCH-$CI_PROJECT_NAME
   TLS_SECRET_NAME:  $CI_PROJECT_NAME-tls-cert
@@ -36,7 +36,6 @@ container_scanning:
 Build Back image:
   stage: build
   image: docker.resel.fr/openresel/outils/ci-docker:latest
-  script:
     - docker build -t $IMAGE_BACK ./api/
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push $IMAGE_BACK
@@ -48,7 +47,7 @@ Build Front image:
   stage: build
   image: docker.resel.fr/openresel/outils/ci-docker:latest
   script:
-    - envsubst < Dockerfile | docker build -t $IMAGE_FRONT ./front/ -f
+    - envsubst < front/Dockerfile.input > front/Dockerfile
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push $IMAGE_FRONT
   only:
