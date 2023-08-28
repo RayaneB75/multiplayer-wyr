@@ -56,7 +56,7 @@ class Wyr extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Text('Tu joue actuellement avec : ${widget.playedUser}',
+          Text('Tu joue actuellement avec : $playedUser',
               style:
                   const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 50),
