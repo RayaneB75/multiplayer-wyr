@@ -79,7 +79,7 @@ class Wyr extends StatelessWidget {
           ElevatedButton(
             child: const Text('Nouvelles propositions'),
             onPressed: () {
-              ApiCalls.pullQuestions(context); // stateless solution
+              ApiCalls.pullQuestions(context, playedUser); // stateless solution
             },
           ),
         ],
