@@ -8,7 +8,7 @@
 
 # exclude front/lib
 !front/lib
-
+!leaderboard/lib
 # Python
 **/__pycache__/
 **/logs/
