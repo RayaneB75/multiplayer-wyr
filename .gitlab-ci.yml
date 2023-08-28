@@ -35,7 +35,7 @@ container_scanning:
 
 Build Back image:
   stage: build
-  image: docker:stable
+  image: docker.resel.fr/openresel/outils/ci-docker:latest
   script:
     - docker build -t $IMAGE_BACK ./api/
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -46,9 +46,9 @@ Build Back image:
 
 Build Front image:
   stage: build
-  image: docker:stable
+  image: docker.resel.fr/openresel/outils/ci-docker:latest
   script:
-    - docker build -t $IMAGE_FRONT ./front/
+    - envsubst < Dockerfile | docker build -t $IMAGE_FRONT ./front/ -f
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push $IMAGE_FRONT
   only:
