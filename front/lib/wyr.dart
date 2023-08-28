@@ -56,7 +56,8 @@ class Wyr extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Text('Tu joue actuellement avec : $playedUser',
+          Text('Duel avec : $playedUser',
+              textAlign: TextAlign.center,
               style:
                   const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 50),
@@ -75,7 +76,7 @@ class Wyr extends StatelessWidget {
             buttonText: secondProp,
             userId: userId,
           ),
-          const SizedBox(height: 150),
+          const SizedBox(height: 50),
           ElevatedButton(
             child: const Text('Nouvelles propositions'),
             onPressed: () {
