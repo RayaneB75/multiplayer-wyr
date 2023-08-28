@@ -49,6 +49,7 @@ Build Front image:
   image: docker.resel.fr/openresel/outils/ci-docker:latest
   script:
     - envsubst < front/Dockerfile.input > front/Dockerfile
+    - docker build -t $IMAGE_FRONT ./api/
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push $IMAGE_FRONT
   only:
