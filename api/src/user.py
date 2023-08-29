@@ -103,8 +103,8 @@ def register():
     password = _json.get("password", None)
 
     # Check if the email exists in LDAP
-    if not is_user_in_db(email, "email", "Ldap"):
-        return return_json(404, "L'email n'existe pas.")
+    # if not is_user_in_db(email, "email", "Ldap"):
+    #     return return_json(404, "L'email n'existe pas.")
 
     # Check if the user is already registered
     if is_user_in_db(email, "email", "Users"):

@@ -48,6 +48,13 @@ services:
     networks:
       - nginx_int_net
 
+  php:
+    container_name: php
+    image: php:7.4-fpm
+    restart: unless-stopped
+    networks:
+      - nginx_int_net
+
 networks:
   nginx_int_net:
     external: true

@@ -9,13 +9,13 @@
 <img src="logo_resel.svg" style="width:100px; float:right; margin-bottom:10px;"/>
 <br>
 <head>
-  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
-  <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link rel="stylesheet" href="rss/style.css">
+    <script type='text/javascript' src='rss/script.js'></script>
 </head>
 
 <div class="result" style="width:800px;"></div>
 
-<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="rss/jquery.js"></script>
 <script>
     function refresh_div() {
         jQuery.ajax({
