@@ -226,7 +226,7 @@ def load_fake_users():
                 for item in new_dict:
                     email, password = item
                     password = create_hashed_password(password)
-                    user_id = random.randint(100, 999)
+                    user_id = random.randint(1000, 9999)
                     score = random.randint(0, 100)
                     query = '''
                         INSERT INTO Users (email, password, score, user_id)
