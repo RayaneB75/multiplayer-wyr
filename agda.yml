@@ -51,7 +51,7 @@ spec:
         image: $IMAGE_BACK_LATEST
         env:
         - name: MYSQL_HOST
-          value: ""
+          value: "${APP_NAME}-db-0.${APP_NAME}-db"
         - name: MYSQL_PORT
           value: "3306"
         - name: MYSQL_DATABASE
@@ -151,7 +151,7 @@ spec:
           ordinal=${BASH_REMATCH[1]}
           echo [mysqld] > /mnt/conf.d/server-id.cnf
           # Add an offset to avoid reserved server-id=0 value.
-          echo server-id=$((100 + $ordinal)) >> /mnt/conf.d/server-id.cnf
+          echo "server-id=$((100 + ordinal))" >> /mnt/conf.d/server-id.cnf
           # Copy appropriate conf.d files from config-map to emptyDir.
           if [[ $ordinal -eq 0 ]]; then
             cp /mnt/config-map/primary.cnf /mnt/conf.d/
