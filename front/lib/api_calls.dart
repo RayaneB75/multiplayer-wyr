@@ -142,8 +142,7 @@ class ApiCalls {
   }
 
   // match endpoint management
-  static Future pullQuestions(
-      BuildContext context, String pullQuestions) async {
+  static Future pullQuestions(BuildContext context, String playedUser) async {
     const String endpoint = "pull";
     int result = 0;
 

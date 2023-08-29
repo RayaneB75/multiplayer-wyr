@@ -56,30 +56,32 @@ class Wyr extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Text('Tu joue actuellement avec : ${widget.playedUser}',
+          const SizedBox(height: 10),
+          Text('Duel avec : $playedUser',
+              textAlign: TextAlign.center,
               style:
-                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 50),
           const Text('Tu préfères ?',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 120),
+          const SizedBox(height: 50),
           Choice(
             buttonText: firstProp,
             userId: userId,
           ),
-          const SizedBox(height: 50),
+          const SizedBox(height: 25),
           const Text('Ou',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 50),
+          const SizedBox(height: 25),
           Choice(
             buttonText: secondProp,
             userId: userId,
           ),
-          const SizedBox(height: 150),
+          const SizedBox(height: 50),
           ElevatedButton(
             child: const Text('Nouvelles propositions'),
             onPressed: () {
-              ApiCalls.pullQuestions(context); // stateless solution
+              ApiCalls.pullQuestions(context, playedUser); // stateless solution
             },
           ),
         ],
