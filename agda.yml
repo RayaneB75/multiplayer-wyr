@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: front
-        image: $IMAGE_FRONT_LATEST
+        image: $IMAGE_FRONT
         env:
         - name: FRONT_TOKEN
           valueFrom:
@@ -48,7 +48,7 @@ spec:
         ports:
         - containerPort: 80
       - name: back
-        image: $IMAGE_BACK_LATEST
+        image: $IMAGE_BACK
         env:
         - name: MYSQL_HOST
           value: "${APP_NAME}-db-0.${APP_NAME}-db"
@@ -133,8 +133,6 @@ spec:
   selector:
     matchLabels:
       app: ${APP_NAME}-db
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
