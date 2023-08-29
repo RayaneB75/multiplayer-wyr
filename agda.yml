@@ -107,7 +107,7 @@ metadata:
   namespace: $NAMESPACE
 spec:
   serviceName: ${APP_NAME}-db
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: ${APP_NAME}-db
@@ -118,10 +118,13 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: mysql:latest
+        image: mysql:8.1.0
         env:
-          - name: MYSQL_RANDOM_ROOT_PASSWORD
-            value: "yes"
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-secrets
+                key: MYSQL_PASSWORD
           - name: MYSQL_DATABASE
             valueFrom:
               secretKeyRef:
@@ -136,17 +139,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: ${APP_NAME}-secrets
-                key: MYSQL_PASSWORD
-          - name: MYSQL_REPLICATION_USER
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-secrets
-                key: MYSQL_REPLICATION_USER
-          - name: MYSQL_REPLICATION_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-secrets
-                key: MYSQL_REPLICATION_PASSWORD                
+                key: MYSQL_PASSWORD          
         ports:
         - name: mysql
           containerPort: 3306
