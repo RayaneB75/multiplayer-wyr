@@ -163,6 +163,21 @@ spec:
       targetPort: 81
   type: ClusterIP
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: $APP_NAME
+  namespace: $NAMESPACE
+spec:
+  selector:
+    app: $APP_NAME
+  ports:
+    - name: back
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
+---
 
 apiVersion: apps/v1
 kind: StatefulSet
@@ -258,3 +273,45 @@ spec:
             name: $APP_NAME
             port:
               number: 81
+      - path: /openSession
+        pathType: Prefix
+        backend:
+          service:
+            name: $APP_NAME
+            port:
+              number: 5000
+      - path: /register
+        pathType: Prefix
+        backend:
+          service:
+            name: $APP_NAME
+            port:
+              number: 5000
+      - path: /login
+        pathType: Prefix
+        backend:
+          service:
+            name: $APP_NAME
+            port:
+              number: 5000
+      - path: /match
+        pathType: Prefix
+        backend:
+          service:
+            name: $APP_NAME
+            port:
+              number: 5000
+      - path: /pull
+        pathType: Prefix
+        backend:
+          service:
+            name: $APP_NAME
+            port:
+              number: 5000
+      - path: /push
+        pathType: Prefix
+        backend:
+          service:
+            name: $APP_NAME
+            port:
+              number: 5000
