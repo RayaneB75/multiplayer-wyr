@@ -39,12 +39,6 @@ spec:
             secretKeyRef:
               name: ${APP_NAME}-secrets
               key: FRONT_TOKEN
-        - name: API_SRV_HOSTNAME
-          value: "localhost"
-        - name: API_SRV_PORT
-          value: "5000"
-        - name: API_SRV_PROTOCOL
-          value: "http"
         ports:
         - containerPort: 80
       - name: back
@@ -106,22 +100,6 @@ spec:
   type: ClusterIP
 ---
 
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ${APP_NAME}-db-configmap
-  namespace: $NAMESPACE
-data:
-  primary.cnf: |
-    # Apply this config only on the primary.
-    [mysqld]
-    log-bin    
-  replica.cnf: |
-    # Apply this config only on replicas.
-    [mysqld]
-    super-read-only  
----
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -142,6 +120,8 @@ spec:
       - name: mysql
         image: mysql:latest
         env:
+          - name: MYSQL_RANDOM_ROOT_PASSWORD
+            value: "yes"
           - name: MYSQL_DATABASE
             valueFrom:
               secretKeyRef:
