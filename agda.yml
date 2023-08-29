@@ -32,23 +32,17 @@ spec:
     spec:
       containers:
       - name: front
-        image: $IMAGE_FRONT_LATEST
+        image: $IMAGE_FRONT
         env:
         - name: FRONT_TOKEN
           valueFrom:
             secretKeyRef:
               name: ${APP_NAME}-secrets
               key: FRONT_TOKEN
-        - name: API_SRV_HOSTNAME
-          value: "localhost"
-        - name: API_SRV_PORT
-          value: "5000"
-        - name: API_SRV_PROTOCOL
-          value: "http"
         ports:
         - containerPort: 80
       - name: back
-        image: $IMAGE_BACK_LATEST
+        image: $IMAGE_BACK
         env:
         - name: MYSQL_HOST
           value: "${APP_NAME}-db-0.${APP_NAME}-db"
@@ -106,22 +100,6 @@ spec:
   type: ClusterIP
 ---
 
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ${APP_NAME}-db-configmap
-  namespace: $NAMESPACE
-data:
-  primary.cnf: |
-    # Apply this config only on the primary.
-    [mysqld]
-    log-bin    
-  replica.cnf: |
-    # Apply this config only on replicas.
-    [mysqld]
-    super-read-only  
----
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -129,7 +107,7 @@ metadata:
   namespace: $NAMESPACE
 spec:
   serviceName: ${APP_NAME}-db
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: ${APP_NAME}-db
@@ -138,35 +116,15 @@ spec:
       labels:
         app: ${APP_NAME}-db
     spec:
-      initContainers:
-      - name: init-mysql
-        image: docker.resel.fr/openresel/mysql_master:latest
-        command:
-        - bash
-        - "-c"
-        - |
-          set -ex
-          # Generate mysql server-id from pod ordinal index.
-          [[ $HOSTNAME =~ -([0-9]+)$ ]] || exit 1
-          ordinal=${BASH_REMATCH[1]}
-          echo [mysqld] > /mnt/conf.d/server-id.cnf
-          # Add an offset to avoid reserved server-id=0 value.
-          echo server-id=$((100 + ordinal)) >> /mnt/conf.d/server-id.cnf
-          # Copy appropriate conf.d files from config-map to emptyDir.
-          if [[ $ordinal -eq 0 ]]; then
-            cp /mnt/config-map/primary.cnf /mnt/conf.d/
-          else
-            cp /mnt/config-map/replica.cnf /mnt/conf.d/
-          fi          
-        volumeMounts:
-        - name: conf
-          mountPath: /mnt/conf.d
-        - name: config-map
-          mountPath: /mnt/config-map
       containers:
       - name: mysql
-        image: docker.resel.fr/openresel/mysql_master:latest
+        image: mysql:8.1.0
         env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ${APP_NAME}-secrets
+                key: MYSQL_PASSWORD
           - name: MYSQL_DATABASE
             valueFrom:
               secretKeyRef:
@@ -181,17 +139,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: ${APP_NAME}-secrets
-                key: MYSQL_PASSWORD
-          - name: MYSQL_REPLICATION_USER
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-secrets
-                key: MYSQL_REPLICATION_USER
-          - name: MYSQL_REPLICATION_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-secrets
-                key: MYSQL_REPLICATION_PASSWORD                
+                key: MYSQL_PASSWORD          
         ports:
         - name: mysql
           containerPort: 3306
@@ -199,31 +147,6 @@ spec:
         - name: ${APP_NAME}-db-pvc
           mountPath: /var/lib/mysql
           subPath: mysql
-        - name: conf
-          mountPath: /etc/mysql/conf.d
-        resources:
-          requests:
-            cpu: 500m
-            memory: 1Gi
-        livenessProbe:
-          exec:
-            command: ["mysqladmin", "ping"]
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-        readinessProbe:
-          exec:
-            # Check we can execute queries over TCP (skip-networking is off).
-            command: ["mysql", "-h", "127.0.0.1", "-e", "SELECT 1"]
-          initialDelaySeconds: 5
-          periodSeconds: 2
-          timeoutSeconds: 1
-      volumes:
-      - name: conf
-        emptyDir: {}
-      - name: config-map
-        configMap:
-          name: ${APP_NAME}-db-configmap
   volumeClaimTemplates:
   - metadata:
       name: ${APP_NAME}-db-pvc
