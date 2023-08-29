@@ -51,7 +51,7 @@ spec:
         image: $IMAGE_BACK_LATEST
         env:
         - name: MYSQL_HOST
-          value: ""
+          value: "${APP_NAME}-db-0.${APP_NAME}-db"
         - name: MYSQL_PORT
           value: "3306"
         - name: MYSQL_DATABASE
