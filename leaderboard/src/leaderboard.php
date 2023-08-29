@@ -13,7 +13,7 @@
 <?php
 
 // Données de connexion à la base de données
-$host = $_ENV['localhost'];
+$host = $_ENV['MYSQL_HOST'];
 $dbname = $_ENV['MYSQL_DATABASE'];
 $username = $_ENV['MYSQL_USER'];
 $password = $_ENV['MYSQL_PASSWORD'];

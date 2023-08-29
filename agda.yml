@@ -80,6 +80,30 @@ spec:
               key: JWT_SECRET_KEY
         ports:
         - containerPort: 5000
+      - name: leaderboard
+        image: $IMAGE_LEADERBOARD
+        env:
+        - name: MYSQL_HOST
+          value: "${APP_NAME}-db-0.${APP_NAME}-db"
+        - name: MYSQL_PORT
+          value: "3306"
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: ${APP_NAME}-secrets
+              key: MYSQL_DATABASE
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: ${APP_NAME}-secrets
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ${APP_NAME}-secrets
+              key: MYSQL_PASSWORD
+        ports:
+        - containerPort: 80
       imagePullSecrets:
         - name: docker-registry-secret
 ---
@@ -129,17 +153,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: ${APP_NAME}-secrets
-                key: MYSQL_DATABASE
-          - name: MYSQL_USER
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-secrets
-                key: MYSQL_USER
-          - name: MYSQL_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: ${APP_NAME}-secrets
-                key: MYSQL_PASSWORD          
+                key: MYSQL_DATABASE       
         ports:
         - name: mysql
           containerPort: 3306
