@@ -1,14 +1,8 @@
 # 1 Set master image
-FROM nginx:stable-alpine
+FROM bitnami/php-fpm
 
-# 2 Set working directory
-WORKDIR /usr/share/nginx/html
+RUN mkdir -p /app
 
-# 5 Remove default nginx website
-RUN rm /etc/nginx/conf.d/default.conf
+COPY /src /app
 
-# 6 Nginx Configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# 7 Copy existing application directory permissions
-COPY  src/ /usr/share/nginx/html
+EXPOSE 9000

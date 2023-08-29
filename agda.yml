@@ -80,7 +80,7 @@ spec:
               key: JWT_SECRET_KEY
         ports:
         - containerPort: 5000
-      - name: leaderboard
+      - name: leaderboard-php
         image: $IMAGE_LEADERBOARD
         env:
         - name: MYSQL_HOST
@@ -103,7 +103,31 @@ spec:
               name: ${APP_NAME}-secrets
               key: MYSQL_PASSWORD
         ports:
-        - containerPort: 80
+        - containerPort: 9000
+      - name: leaderboard-nginx
+        image: $IMAGE_LEADERBOARD_NGINX
+        env:
+        - name: MYSQL_HOST
+          value: "${APP_NAME}-db-0.${APP_NAME}-db"
+        - name: MYSQL_PORT
+          value: "3306"
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: ${APP_NAME}-secrets
+              key: MYSQL_DATABASE
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: ${APP_NAME}-secrets
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ${APP_NAME}-secrets
+              key: MYSQL_PASSWORD
+        ports:
+        - containerPort: 81
       imagePullSecrets:
         - name: docker-registry-secret
 ---
@@ -121,6 +145,22 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 80
+  type: ClusterIP
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: $APP_NAME
+  namespace: $NAMESPACE
+spec:
+  selector:
+    app: $APP_NAME
+  ports:
+    - name: leaderboard
+      protocol: TCP
+      port: 81
+      targetPort: 81
   type: ClusterIP
 ---
 
@@ -211,3 +251,10 @@ spec:
             name: $APP_NAME
             port:
               number: 80
+      - path: /leaderboard
+        pathType: Prefix
+        backend:
+          service:
+            name: $APP_NAME
+            port:
+              number: 81
