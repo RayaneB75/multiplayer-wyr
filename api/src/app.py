@@ -167,12 +167,9 @@ def main(*args, debug=False, run=False):
     while cpt:
         conn = connect_db()
         if conn is not None:
-<<<<<<< HEAD
             conn.close()
-=======
             create_db()
             load_db()
->>>>>>> develop
             print("== Connection succeed ==", file=stdout)
             logging.info("== Loading database ==")
             load_db()
