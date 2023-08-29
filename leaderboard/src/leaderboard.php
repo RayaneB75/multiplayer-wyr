@@ -7,16 +7,16 @@
 <body class="mdc-typography" style="width:800px; position:absolute; top: 50%;  left: 50%; transform: translate(-50%, -50%);">
 <br>
 <head>
-  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
-  <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link rel="stylesheet" href="rss/style.css">
+    <script type='text/javascript' src='rss/script.js'></script>
 </head>
 <?php
 
 // Données de connexion à la base de données
-$host = "rayane.space";
-$dbname = "app_inte";
-$username = "api";
-$password = "EKntIM0au5D0Cd4a7XEHh4qObIMt0d9k";
+$host = $_ENV['DB_HOST'];
+$dbname = $_ENV[];
+$username = $_ENV[];
+$password = $_ENV[];
 
 // Connexion à la base de données
 try {
