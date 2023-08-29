@@ -104,8 +104,6 @@ def is_user_in_db(iden, id_type, table):
                 cursor.execute("SELECT email FROM Users")
             elif id_type == "user_id":
                 cursor.execute("SELECT user_id FROM Users")
-        else:
-            cursor.execute("SELECT email FROM Ldap")
 
         for item in cursor:
             if item[0] == iden or str(item[0]) == iden:
