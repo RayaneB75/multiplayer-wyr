@@ -151,7 +151,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: $APP_NAME
+  name: $APP_NAME-php
   namespace: $NAMESPACE
 spec:
   selector:
@@ -166,7 +166,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: $APP_NAME
+  name: $APP_NAME-back
   namespace: $NAMESPACE
 spec:
   selector:
@@ -263,49 +263,49 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: $APP_NAME
+            name: $APP_NAME-php
             port:
               number: 81
       - path: /openSession
         pathType: Prefix
         backend:
           service:
-            name: $APP_NAME
+            name: $APP_NAME-back
             port:
               number: 5000
       - path: /register
         pathType: Prefix
         backend:
           service:
-            name: $APP_NAME
+            name: $APP_NAME-back
             port:
               number: 5000
       - path: /login
         pathType: Prefix
         backend:
           service:
-            name: $APP_NAME
+            name: $APP_NAME-back
             port:
               number: 5000
       - path: /match
         pathType: Prefix
         backend:
           service:
-            name: $APP_NAME
+            name: $APP_NAME-back
             port:
               number: 5000
       - path: /pull
         pathType: Prefix
         backend:
           service:
-            name: $APP_NAME
+            name: $APP_NAME-back
             port:
               number: 5000
       - path: /push
         pathType: Prefix
         backend:
           service:
-            name: $APP_NAME
+            name: $APP_NAME-back
             port:
               number: 5000
       - path: /
