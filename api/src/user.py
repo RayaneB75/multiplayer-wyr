@@ -103,14 +103,14 @@ def register():
     password = _json.get("password", None)
 
     # Check if the email exists in LDAP
-    if not is_user_in_db(email, "email", "Ldap"):
-        return return_json(404, "L'email n'existe pas.")
+    # if not is_user_in_db(email, "email", "Ldap"):
+    #     return return_json(404, "L'email n'existe pas.")
 
     # Check if the user is already registered
     if is_user_in_db(email, "email", "Users"):
         return return_json(404, "Cet utilisateur existe déjà.")
-    # Generate a random 6-digit ID
-    user_id = random.randint(100, 999)
+    # Generate a random 3-digit ID
+    user_id = random.randint(100, 9999)
     score = 0
     try:
         cnx = connect_db()

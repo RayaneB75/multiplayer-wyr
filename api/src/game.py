@@ -52,8 +52,6 @@ def match():
             return return_json(404, "Vous ne pouvez pas jouer avec vous même")
         if user_r is None or not is_user_in_db(user_r, "user_id", "Users"):
             return return_json(404, "Cet utilisateur n'existe pas")
-        if is_user_in_game(user_r) != 0:
-            return return_json(404, "Le joueur est déjà en partie")
         if not is_duo_available(user_i, user_r):
             return return_json(404, "Vous avez déjà joué avec cet utilisateur")
         # All the checks are done, we can add the match to the database
@@ -81,9 +79,6 @@ def pull():
     if not is_user_in_db(user_i_email, "email", "Users"):
         return return_json(404, "Vous n'êtes pas connecté")
 
-    if is_user_in_game(email_to_user_id(user_i_email)) == 0:
-        return return_json(404, "Vous n'avez pas de partie en cours")
-
     question_number = random.randint(1, 389)
 
     try:
@@ -105,7 +100,7 @@ def pull():
 
 
 @jwt_required()
-# POST /push
+# GET /push
 def push():
     """
     Pushes the answers to the server
@@ -117,9 +112,6 @@ def push():
     user_i = email_to_user_id(user_i_email)
     if not is_user_in_db(user_i_email, "email", "Users"):
         return return_json(404, "Vous n'êtes pas connecté")
-
-    if is_user_in_game(email_to_user_id(user_i_email)) == 0:
-        return return_json(404, "Vous n'avez pas de partie en cours")
 
     try:
         user_r = is_user_in_game(user_i)

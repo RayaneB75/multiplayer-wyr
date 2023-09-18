@@ -19,9 +19,8 @@ CREATE TABLE if not exists `Users` (
     `password` varchar(255) NOT NULL,
     `score` int NOT NULL,
     `user_id` int NOT NULL,
-    `in_game_with` int NOT NULL DEFAULT "0" CHECK(in_game_with IN ("0", "999999")),
-    PRIMARY KEY (`user_id`),
-    FOREIGN KEY (`email`) REFERENCES Ldap(`email`)
+    `in_game_with` int NOT NULL DEFAULT "0",
+    PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB;
 """
 
@@ -44,16 +43,16 @@ CREATE TABLE if not exists `Game` (
 ) ENGINE=InnoDB;
 """
 
-CREATE_TABLE_LDAP = """\
-CREATE TABLE if not exists `Ldap` (
-    `email` varchar(255) NOT NULL,
-    PRIMARY KEY (`email`)
-) ENGINE=InnoDB;
-"""
+# CREATE_TABLE_LDAP = """\
+# CREATE TABLE if not exists `Ldap` (
+#     `email` varchar(255) NOT NULL,
+#     PRIMARY KEY (`email`)
+# ) ENGINE=InnoDB;
+# """
 
 
 create_tables = {
-    "Ldap": CREATE_TABLE_LDAP,
+    # "Ldap": CREATE_TABLE_LDAP,
     "Users": CREATE_TABLE_USERS,
     "Game": CREATE_TABLE_GAME,
     "Matches": CREATE_TABLE_MATCHES,
@@ -63,14 +62,14 @@ delete_tables = {
     "Matches": "DELETE FROM Matches",
     "Game": "DELETE FROM Game",
     "Users": "DELETE FROM Users",
-    "Ldap": "DELETE FROM Ldap",
+    # "Ldap": "DELETE FROM Ldap",
 }
 
 drop_tables = {
     "Matches": "DROP TABLE IF EXISTS Matches",
     "Game": "DROP TABLE IF EXISTS Game",
     "Users": "DROP TABLE IF EXISTS Users",
-    "Ldap": "DROP TABLE IF EXISTS Ldap",
+    # "Ldap": "DROP TABLE IF EXISTS Ldap",
 }
 
 
@@ -166,20 +165,21 @@ def load_db():
     try:
         cnx = connect_db()
         cursor = cnx.cursor()
+        create_db()
         if cnx is None:
             logging.error("db connection failed")
             return False
-        with open(file="Database/mails.export", mode="r", encoding="utf-8") as ldap_file:
-            cursor.execute("SELECT COUNT(*) FROM Ldap")
-            row_count = cursor.fetchone()[0]
-            if row_count == 0:
-                query = "INSERT INTO Ldap (email) VALUES (%s)"
-                cursor.executemany(query, [(line.strip(),)
-                                   for line in ldap_file])
-                cnx.commit()
-            else:
-                logging.info("Ldap table already filled")
-            ldap_file.close()
+        # with open(file="Database/mails.export", mode="r", encoding="utf-8") as ldap_file:
+        #     cursor.execute("SELECT COUNT(*) FROM Ldap")
+        #     row_count = cursor.fetchone()[0]
+        #     if row_count == 0:
+        #         query = "INSERT INTO Ldap (email) VALUES (%s)"
+        #         cursor.executemany(query, [(line.strip(),)
+        #                            for line in ldap_file])
+        #         cnx.commit()
+        #     else:
+        #         logging.info("Ldap table already filled")
+        #     ldap_file.close()
         with open(file="Database/game_set/wyr_fr.json", mode="r", encoding="utf-8") as game_file:
             new_dict = json.load(game_file)
             cursor.execute("SELECT COUNT(*) FROM Game")
@@ -225,7 +225,7 @@ def load_fake_users():
                 for item in new_dict:
                     email, password = item
                     password = create_hashed_password(password)
-                    user_id = random.randint(100000, 999999)
+                    user_id = random.randint(1000, 9999)
                     score = random.randint(0, 100)
                     query = '''
                         INSERT INTO Users (email, password, score, user_id)
@@ -240,7 +240,7 @@ def load_fake_users():
             fake_file.close()
     except mysql.Error as err:
         logging.error(
-            "Error while loading data into the database : %s", err)
+            "Error while loading fake data into the database : %s", err)
         return False
     finally:
         cnx.close()

@@ -132,10 +132,10 @@ app.add_url_rule("/register", "refresh", register, methods=["POST", "OPTIONS"])
 app.add_url_rule("/login", "login", login, methods=["POST", "OPTIONS"])
 app.add_url_rule("/match", "match", match, methods=["POST", "OPTIONS"])
 app.add_url_rule("/pull", "pull", pull, methods=["GET", "OPTIONS"])
-app.add_url_rule("/push", "push", push, methods=["POST", "OPTIONS"])
+app.add_url_rule("/push", "push", push, methods=["GET", "OPTIONS"])
 app.add_url_rule("/healthcheck", "healthcheck",
                  healthcheck, methods=["GET", "OPTIONS"])
-app.add_url_rule("/pub/dashboard", "dashboard",
+app.add_url_rule("/pub/leaderboard", "dashboard",
                  dashboard, methods=["GET", "OPTIONS"])
 
 
@@ -168,14 +168,14 @@ def main(*args, debug=False, run=False):
         conn = connect_db()
         if conn is not None:
             conn.close()
+            create_db()
             load_db()
             print("== Connection succeed ==", file=stdout)
+            logging.info("== Loading database ==")
+            load_db()
             if app_args.clear_db:
                 logging.info("== Clearing Database ==")
                 delete_data()
-            if app_args.create_db:
-                logging.info("== Creating Database ==")
-                create_db()
             if app_args.reset_db:
                 logging.info("== Reseting Database ==")
                 reset_db()

@@ -62,13 +62,14 @@ class _PasswordFieldCustomState extends State<PasswordFieldCustom> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'S\'il vous plait renseignez ce champ';
-          } else if (value.length < 6) {
+          } else if (value.length < 3) {
             return 'Le mot de passe est trop court';
           }
           return null;
         },
         controller: widget.controller,
         obscureText: _obscureText,
+        keyboardType: TextInputType.number, // password is a number
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           labelText: widget.content,
@@ -116,8 +117,8 @@ class _PlayerIDFieldCustomState extends State<PlayerIDFieldCustom> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'S\'il vous plait renseignez ce champ';
-          } else if (value.length != 6) {
-            return 'Identifiant invalide (6 chiffres requis)';
+          } else if (value.length < 3) {
+            return 'Identifiant invalide (3 chiffres requis)';
           }
           return null;
         },

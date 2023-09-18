@@ -5,37 +5,19 @@ import 'api_calls.dart';
 class WyrWindow extends StatelessWidget {
   final String firstProp;
   final String secondProp;
-  final String userId;
+  final int userId;
+  final String playedUser;
 
   const WyrWindow(
       {super.key,
       required this.firstProp,
       required this.secondProp,
-      required this.userId});
+      required this.userId,
+      required this.playedUser});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Column(
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     crossAxisAlignment: CrossAxisAlignment.center,
-      //     children: [
-      //       const Padding(
-      //         padding: EdgeInsets.only(top: 10),
-      //         child: Text(
-      //         "Would you rather ?",
-      //         ),
-      //       ),
-      //       GestureDetector(
-      //         child: const Text('sample subtitle', style: TextStyle(fontSize: 13)),
-      //         onTap: () {
-
-      //         },
-      //       )
-      //     ]
-      //   ),
-      // ),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Image.asset(
@@ -46,7 +28,10 @@ class WyrWindow extends StatelessWidget {
       ),
       body: Center(
           child: Wyr(
-              firstProp: firstProp, secondProp: secondProp, userId: userId)),
+              firstProp: firstProp,
+              secondProp: secondProp,
+              userId: userId,
+              playedUser: playedUser)),
     );
   }
 }
@@ -54,13 +39,15 @@ class WyrWindow extends StatelessWidget {
 class Wyr extends StatelessWidget {
   final String firstProp;
   final String secondProp;
-  final String userId;
+  final int userId;
+  final String playedUser;
 
   const Wyr(
       {super.key,
       required this.firstProp,
       required this.secondProp,
-      required this.userId});
+      required this.userId,
+      required this.playedUser});
 
   @override
   Widget build(BuildContext context) {
@@ -69,26 +56,32 @@ class Wyr extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          const SizedBox(height: 10),
+          Text('Duel avec : $playedUser',
+              textAlign: TextAlign.center,
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 50),
           const Text('Tu préfères ?',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 120),
+          const SizedBox(height: 50),
           Choice(
             buttonText: firstProp,
             userId: userId,
           ),
-          const SizedBox(height: 50),
+          const SizedBox(height: 25),
           const Text('Ou',
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 50),
+          const SizedBox(height: 25),
           Choice(
             buttonText: secondProp,
             userId: userId,
           ),
-          const SizedBox(height: 150),
+          const SizedBox(height: 50),
           ElevatedButton(
             child: const Text('Nouvelles propositions'),
             onPressed: () {
-              ApiCalls.pullQuestions(userId, context); // stateless solution
+              ApiCalls.pullQuestions(context, playedUser); // stateless solution
             },
           ),
         ],
@@ -99,7 +92,7 @@ class Wyr extends StatelessWidget {
 
 class Choice extends StatelessWidget {
   final String buttonText;
-  final String userId;
+  final int userId;
 
   const Choice({Key? key, required this.buttonText, required this.userId})
       : super(key: key);
@@ -111,10 +104,15 @@ class Choice extends StatelessWidget {
       height: 100.0,
       child: ElevatedButton(
         onPressed: () {
-          ApiCalls.pushAnswer(userId, context);
+          ApiCalls.pushAnswer(context);
         },
-        child: Text(buttonText,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+        child: Text(
+            textAlign: TextAlign.center,
+            buttonText,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            )),
       ),
     );
   }

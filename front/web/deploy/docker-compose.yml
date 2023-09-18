@@ -3,7 +3,7 @@ version: "3.8"
 services:
   db:
     container_name: db_inte
-    image: mysql:latest
+    image: mysql:5.7
     restart: unless-stopped
     volumes:
       - ./application_data/db:/var/lib/mysql
@@ -33,6 +33,25 @@ services:
     depends_on:
       api:
         condition: service_started
+    networks:
+      - nginx_int_net
+
+  leaderboard:
+    container_name: leaderboard
+    image: leaderboard:latest
+    restart: unless-stopped
+    env_file:
+      - leaderboard.env
+    depends_on:
+      db:
+        condition: service_started
+    networks:
+      - nginx_int_net
+
+  php:
+    container_name: php
+    image: php:7.4-fpm
+    restart: unless-stopped
     networks:
       - nginx_int_net
 
