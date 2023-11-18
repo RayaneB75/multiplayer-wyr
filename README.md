@@ -1,9 +1,17 @@
+<p align="center">
+    <img src="docs/img/logo.png#gh-light-mode-only" width="75%">
+    <img src="docs/img/logo-dark.png#gh-dark-mode-only" width="75%">
+</p>
+
+
+
 # Web App pour la soirée d'intégration de 2023
 
 Cette application est un "Would you rather/Tu préfères" pour la soirée d'intégration de 2023. 
 Chaque joueur doit trouver des partenaires durant la soirée pour répondre à des questions (2 par partenaires), et les scores (nombre de questions répondues) sont affichés en direct sur un écran (dashboard) en temps réel.
 
 ## Auteurs
+
 - Rayane BELKHIR (FIP 2025)
 - Louis RAVAUX (FIP 2025)
 
