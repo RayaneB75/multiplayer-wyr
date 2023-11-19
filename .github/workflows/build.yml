@@ -1,0 +1,46 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  frontend_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - run: cd front
+      # Envsubst for secret handling in frontend
+      - name: Replacing env vars by secrets
+        run: envsubst < Dockerfile.input > Dockerfile
+
+      - name: Build the frontend Docker image
+        run: docker build . --file Dockerfile --tag wyr_multiplayer:$(date +%s)
+
+  backend_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - run: cd api
+      # Envsubst for secret handling in frontend
+
+      - name: Build the backend Docker image
+        run: docker build . --file Dockerfile --tag wyr_multiplayer:$(date +%s)
+
+  leaderboard_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - run: cd leaderboard
+      # Envsubst for secret handling in frontend
+
+      - name: Build the leaderboard Docker image
+        run: docker build . --file Dockerfile --tag wyr_multiplayer:$(date +%s)
+
+      - name: Build the reverse proxy Docker image
+        run: docker build . --file Dockerfile.nginx --tag wyr_multiplayer:$(date +%s)

@@ -5,10 +5,11 @@
 **/include
 **/lib
 **/lib64
-
-# exclude front/lib
+# include frontlib
 !front/lib
-!leaderboard/lib
+
+**/*.lock
+
 # Python
 **/__pycache__/
 **/logs/
